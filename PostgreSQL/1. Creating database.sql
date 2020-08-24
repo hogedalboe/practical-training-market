@@ -179,7 +179,7 @@ CREATE TABLE Limits (
 	SpecNum INT,
 	EduNum INT,
 	PNum INT,
-	PRIMARY KEY (LimitationCode, SpecNum, EduNum, PNUM),
+	PRIMARY KEY (LimitationCode, SpecNum, EduNum, PNum),
 	FOREIGN KEY (LimitationCode) REFERENCES Limitation (LimitationCode),
 	FOREIGN KEY (SpecNum, EduNum, PNum) REFERENCES Approval (SpecNum, EduNum, PNum)
 );

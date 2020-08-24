@@ -8,7 +8,7 @@ import config
 
 db = objects.Database(config.server, config.database, config.user, config.password)
 
-################################################################################################################################ Removing approvals with certain limitation codes
+################################################################################################################################ Removing approvals with certain limitation codes (cascading removal of limitation relationships)
 
 # Limitation codes causing removal:
 #	1141 2 pr. år
@@ -60,6 +60,7 @@ for index, row in dfLimits.iterrows():
 
 
 
+################################################################################################################################ Remove production units that no longer have any relations with an approval
 
 
 
@@ -68,9 +69,8 @@ for index, row in dfLimits.iterrows():
 
 
 
-################################################################################################################################ Remove production units and companies, that no longer have any relations with an approval
 
 
 
 
-
+################################################################################################################################ Remove companies that no longer have any relations with a production unit
