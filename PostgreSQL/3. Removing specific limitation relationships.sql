@@ -25,15 +25,15 @@ SELECT specnum, edunum, pnum FROM limits
 WHERE limitationcode IN (SELECT limitationcode FROM limits_to_delete);
 
 -- Removing limitation relationships.
-DELETE FROM limits AS l
-USING temp_limits AS tl
+DELETE FROM limits l
+USING temp_limits tl
 WHERE l.specnum = tl.specnum
 	AND l.edunum = tl.edunum
 	AND l.pnum = tl.pnum;
 
 -- Removing approvals.
-DELETE FROM approval AS a
-USING temp_limits AS tl
+DELETE FROM approval a
+USING temp_limits tl
 WHERE a.specnum = tl.specnum
 	AND a.edunum = tl.edunum
 	AND a.pnum = tl.pnum;
