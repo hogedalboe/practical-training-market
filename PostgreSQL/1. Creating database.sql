@@ -83,29 +83,29 @@ CREATE TABLE Facility (
 	StreetNumber VARCHAR(100),
 	City VARCHAR(100),
 	PostalCode INT,
-	Latitude VARCHAR(100),
-	Longitude VARCHAR(100),
 	PRIMARY KEY (ID),
 	FOREIGN KEY (PostalCode) REFERENCES PostalArea (PostalCode),
 	FOREIGN KEY (SchoolNum) REFERENCES School (SchoolNum),
 	FOREIGN KEY (EduNum) REFERENCES Education (EduNum)
 );
 
---CREATE TABLE Organization (
---	OrgNum INT,
---	Name VARCHAR(100),
---	OrgType VARCHAR(100),
---	PRIMARY KEY (OrgNum)
---);
+/*
+CREATE TABLE Organization (
+	OrgNum INT,
+	Name VARCHAR(100),
+	OrgType VARCHAR(100),
+	PRIMARY KEY (OrgNum)
+);
 
---CREATE TABLE Seating (
---	OrgNum INT,
---	CommitteeCode INT,
---	Seats INT,
---	PRIMARY KEY (OrgNum, CommitteeCode),
---	FOREIGN KEY (OrgNum) REFERENCES Organization (OrgNum),
---	FOREIGN KEY (CommitteeCode) REFERENCES Committee (CommitteeCode)
---);
+CREATE TABLE Seating (
+	OrgNum INT,
+	CommitteeCode INT,
+	Seats INT,
+	PRIMARY KEY (OrgNum, CommitteeCode),
+	FOREIGN KEY (OrgNum) REFERENCES Organization (OrgNum),
+	FOREIGN KEY (CommitteeCode) REFERENCES Committee (CommitteeCode)
+);
+*/
 
 CREATE TABLE Specialization (
 	SpecNum INT,
@@ -147,8 +147,6 @@ CREATE TABLE ProductionUnit (
 	StreetNumber VARCHAR(100),
 	City VARCHAR(100),
 	PostalCode INT,
-	Latitude VARCHAR(100),
-	Longitude VARCHAR(100),
 	PRIMARY KEY (PNum),
 	FOREIGN KEY (PostalCode) REFERENCES PostalArea (PostalCode),
 	FOREIGN KEY (CVRNum) REFERENCES Company (CVRNum)
