@@ -17,6 +17,7 @@ INSERT INTO limits_to_delete VALUES (1230);
 INSERT INTO limits_to_delete VALUES (1096);
 INSERT INTO limits_to_delete VALUES (1097);
 INSERT INTO limits_to_delete VALUES (1100);
+INSERT INTO limits_to_delete VALUES (1019);
 
 -- Storing the limitation relationships (limitation key relationships must be removed before approvals due to foreign key constraints).
 DROP TABLE IF EXISTS temp_limits;

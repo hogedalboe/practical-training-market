@@ -1,0 +1,219 @@
+2020-09-05 15:21:42.440539
+Øster Vrå was corrected to Østervrå (postal area code: 9750)
+
+2020-09-05 15:31:14.866898
+Ovtrup was corrected to Outrup (postal area code: 6855)
+
+2020-09-05 15:32:57.193260
+Gjern was corrected to Gjern (postal area code: 8883)
+
+2020-09-05 17:09:22.741142
+('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))
+
+2020-09-05 17:15:49.218329
+Beder was corrected to Beder (postal area code: 8330)
+
+2020-09-05 17:20:15.308503
+København K was corrected to København K (postal area code: 1160)
+
+2020-09-05 17:40:10.093771
+København V was corrected to København V (postal area code: 1606)
+
+2020-09-05 20:57:48.359172
+København V was corrected to København V (postal area code: 1606)
+
+2020-09-05 21:04:24.076496
+København K was corrected to København K (postal area code: 1250)
+
+2020-09-05 21:12:31.497562
+Store Fuglede was corrected to Store Fuglede (postal area code: 4480)
+
+2020-09-05 21:21:14.761666
+Mern was corrected to Mern (postal area code: 4735)
+
+2020-09-05 21:37:51.787442
+Bækmarksbro was corrected to Bækmarksbro (postal area code: 7660)
+
+2020-09-05 21:41:26.896700
+Humble was corrected to Humble (postal area code: 5932)
+
+2020-09-05 21:55:57.073690
+Gudhjem was corrected to Gudhjem (postal area code: 3760)
+
+2020-09-05 22:00:48.097090
+Øster Vrå was corrected to Østervrå (postal area code: 9750)
+
+2020-09-05 22:01:28.590956
+Østbirk was corrected to Østbirk (postal area code: 8752)
+
+2020-09-05 22:15:27.690788
+Store Merløse was corrected to Store Merløse (postal area code: 4370)
+
+2020-09-05 22:20:53.838817
+Fur was corrected to Fur (postal area code: 7884)
+
+2020-09-05 22:39:23.667440
+Klovborg was corrected to Klovborg (postal area code: 8765)
+
+2020-09-05 22:48:19.897910
+Stoholm Jylland was corrected to Stoholm Jyll (postal area code: 7850)
+
+2020-09-05 22:59:44.172219
+København V was corrected to København V (postal area code: 1634)
+
+2020-09-05 23:09:44.603845
+Bagenkop was corrected to Bagenkop (postal area code: 5935)
+
+2020-09-05 23:15:29.829947
+Jerup was corrected to Jerup (postal area code: 9981)
+
+2020-09-05 23:29:14.903594
+Vestbjerg was corrected to Vestbjerg (postal area code: 9380)
+
+2020-09-05 23:47:13.039941
+København K was corrected to København K (postal area code: 1415)
+
+2020-09-05 23:51:13.032590
+København K was corrected to København K (postal area code: 1095)
+
+2020-09-06 00:45:11.486986
+Løgstrup was corrected to Løgstrup (postal area code: 8831)
+
+2020-09-06 00:57:11.814191
+København K was corrected to København K (postal area code: 1069)
+
+2020-09-06 01:00:19.220437
+Stokkemarke was corrected to Stokkemarke (postal area code: 4952)
+
+2020-09-06 01:09:39.843027
+Mørkøv was corrected to Mørkøv (postal area code: 4440)
+
+2020-09-06 01:19:44.825569
+København K was corrected to København K (postal area code: 1467)
+
+2020-09-06 01:37:33.950632
+København K was corrected to København K (postal area code: 1466)
+
+2020-09-06 01:49:19.184122
+Løgumkloster was corrected to Løgumkloster (postal area code: 6240)
+
+2020-09-06 01:57:00.272318
+Glumsø was corrected to Glumsø (postal area code: 4171)
+
+2020-09-06 02:15:40.172939
+Gudme was corrected to Gudme (postal area code: 5884)
+
+2020-09-06 02:22:00.955215
+Havndal was corrected to Havndal (postal area code: 8970)
+
+2020-09-06 02:34:03.436807
+Jystrup Midtsjælland was corrected to Jystrup Midtsj (postal area code: 4174)
+
+2020-09-06 02:45:16.726563
+København K was corrected to København K (postal area code: 1162)
+
+2020-09-06 02:47:59.544619
+Frederiksberg C was corrected to Frederiksberg C (postal area code: 1957)
+
+2020-09-06 02:56:34.230372
+Sjællands Odde was corrected to Sjællands Odde (postal area code: 4583)
+
+2020-09-06 03:07:55.171746
+København K was corrected to København K (postal area code: 1440)
+
+2020-09-06 03:22:53.406721
+København K was corrected to København K (postal area code: 1173)
+
+2020-09-06 03:24:42.283327
+København K was corrected to København K (postal area code: 1420)
+
+2020-09-06 03:33:03.237743
+Frederiksberg C was corrected to Frederiksberg C (postal area code: 1875)
+
+2020-09-06 03:44:11.248238
+Eskebjerg was corrected to Eskebjerg (postal area code: 4593)
+
+2020-09-06 03:51:09.902319
+København K was corrected to København K (postal area code: 1462)
+
+2020-09-06 04:00:49.635856
+København V was corrected to København V (postal area code: 1654)
+
+2020-09-06 04:08:49.314956
+Hjerm was corrected to Hjerm (postal area code: 7560)
+
+2020-09-06 04:17:18.629472
+Sønder Felding was corrected to Sønder Felding (postal area code: 7280)
+
+2020-09-06 04:18:58.386476
+København V was corrected to København V (postal area code: 1650)
+
+2020-09-06 04:27:46.470300
+Klampenborg was corrected to Klampenborg (postal area code: 2930)
+
+2020-09-06 04:39:24.675869
+København K was corrected to København K (postal area code: 1210)
+
+2020-09-06 04:45:53.773461
+Knebel was corrected to Knebel (postal area code: 8420)
+
+2020-09-06 05:03:29.260033
+Klemensker was corrected to Klemensker (postal area code: 3782)
+
+2020-09-06 05:12:53.894014
+Hornbæk was corrected to Hornbæk (postal area code: 3100)
+
+2020-09-06 05:24:36.292569
+Tureby was corrected to Tureby (postal area code: 4682)
+
+2020-09-06 05:40:04.912961
+København K was corrected to København K (postal area code: 1129)
+
+2020-09-06 05:51:34.338809
+Frederiksberg C was corrected to Frederiksberg C (postal area code: 1874)
+
+2020-09-06 06:08:39.987936
+Vipperød was corrected to Vipperød (postal area code: 4390)
+
+2020-09-06 06:17:11.079541
+København V was corrected to København V (postal area code: 1635)
+
+2020-09-06 06:29:27.284578
+Kalvehave was corrected to Kalvehave (postal area code: 4771)
+
+2020-09-06 06:41:56.286450
+Lemming was corrected to Lemming (postal area code: 8632)
+
+2020-09-06 06:43:16.349288
+Jerslev J was corrected to Jerslev J (postal area code: 9740)
+
+2020-09-06 06:58:22.917099
+Frederiksberg C was corrected to Frederiksberg C (postal area code: 1879)
+
+2020-09-06 07:02:53.859138
+Frederiksberg C was corrected to Frederiksberg C (postal area code: 1960)
+
+2020-09-06 07:11:26.801040
+Gjern was corrected to Gjern (postal area code: 8883)
+
+2020-09-06 08:08:52.521833
+København V was corrected to København V (postal area code: 1608)
+
+2020-09-06 08:17:41.980609
+Strøby was corrected to Strøby (postal area code: 4671)
+
+2020-09-06 08:21:44.172028
+København K was corrected to København K (postal area code: 1308)
+
+2020-09-06 17:41:53.445136
+Øster Vrå was corrected to Østervrå (postal area code: 9750)
+
+2020-09-06 17:52:30.590063
+København K was corrected to København K (postal area code: 1095)
+
+2020-09-06 18:45:47.445865
+Jystrup Midtsjælland was corrected to Jystrup Midtsj (postal area code: 4174)
+
+2020-09-06 18:52:02.288297
+Gjern was corrected to Gjern (postal area code: 8883)
+

@@ -464,18 +464,18 @@ def limits():
 
 ################################################################################################################################ Execute the population functions
 
-schools()
-committeesEducations()
-subnational()
-facilities()
-specializations()
-sectors()
-business()
-company()
-productionUnits()
-limitations()
-approvals()
-limits()
+#schools()
+#committeesEducations()
+#subnational()
+#facilities()
+#specializations()
+#sectors()
+#business()
+#company()
+#productionUnits()
+#limitations()
+#approvals()
+#limits()
 
 ################################################################################################################################ Disconnect database
 

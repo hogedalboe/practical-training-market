@@ -9,9 +9,6 @@ db = objects.Database(config.server, config.database, config.user, config.passwo
 
 logger = objects.Logger()
 
-# Credit: https://stackabuse.com/getting-started-with-selenium-and-python/
-# Credit: https://selenium-python.readthedocs.io/waits.html
-
 # Get companies from the database
 dfCompanies = db.Read("SELECT * FROM company")
 
@@ -92,6 +89,4 @@ for i, row in dfCompanies.iterrows():
         scraper.reset()
         previous = previousScrapings()
     
-input("STOP")
-
 

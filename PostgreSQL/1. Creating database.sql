@@ -1,15 +1,15 @@
 -- Database: practicaltrainingmarket
 
---DROP DATABASE practicaltrainingmarket;
+DROP DATABASE IF EXISTS practicaltrainingmarket;
 
---CREATE DATABASE practicaltrainingmarket
---    WITH 
---    OWNER = postgres
---    ENCODING = 'UTF8'
---    LC_COLLATE = 'English_United States.1252'
---    LC_CTYPE = 'English_United States.1252'
---    TABLESPACE = pg_default
---    CONNECTION LIMIT = -1;
+CREATE DATABASE practicaltrainingmarket
+    WITH 
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'English_United States.1252'
+    LC_CTYPE = 'English_United States.1252'
+    TABLESPACE = pg_default
+    CONNECTION LIMIT = -1;
 
 -- Drop tables
 DROP TABLE IF EXISTS School CASCADE;
@@ -21,6 +21,7 @@ DROP TABLE IF EXISTS Seating CASCADE;
 DROP TABLE IF EXISTS Specialization CASCADE;
 DROP TABLE IF EXISTS ProductionUnit CASCADE;
 DROP TABLE IF EXISTS Approval CASCADE;
+DROP TABLE IF EXISTS CombinedApproval CASCADE;
 DROP TABLE IF EXISTS Distance CASCADE;
 DROP TABLE IF EXISTS Company CASCADE;
 DROP TABLE IF EXISTS Financial CASCADE;
@@ -31,6 +32,7 @@ DROP TABLE IF EXISTS Region CASCADE;
 DROP TABLE IF EXISTS Municipality CASCADE;
 DROP TABLE IF EXISTS Limitation CASCADE;
 DROP TABLE IF EXISTS Limits CASCADE;
+DROP TABLE IF EXISTS MunicipalityDemographics CASCADE;
 
 -- Tables
 CREATE TABLE School (
@@ -74,6 +76,17 @@ CREATE TABLE PostalArea (
 	PRIMARY KEY (PostalCode),
 	FOREIGN KEY (MunicipalityCode) REFERENCES Municipality (MunicipalityCode)
 );
+
+CREATE TABLE MunicipalityDemographics (
+	yearofmeasurement INT,
+	MunicipalityCode INT,
+	avgcommutekm FLOAT,
+	employmentrate FLOAT,
+	employmentavailabilityrate FLOAT,
+	yearlydisposableincome FLOAT,
+	PRIMARY KEY (yearofmeasurement, MunicipalityCode),
+	FOREIGN KEY (MunicipalityCode) REFERENCES Municipality (MunicipalityCode)
+)
 
 CREATE TABLE Facility (
 	ID SERIAL,
@@ -172,6 +185,19 @@ CREATE TABLE Approval (
 	FOREIGN KEY (PNum) REFERENCES ProductionUnit (PNum)
 );
 
+CREATE TABLE CombinedApproval (
+	EduNum INT,
+	PNum INT,
+	ApprovalAmount FLOAT,
+	CurrentAmount FLOAT,
+	NearestKm FLOAT,
+	NearestHours FLOAT,
+	NearestMinutes FLOAT,
+	PRIMARY KEY (EduNum, PNum),
+	FOREIGN KEY (EduNum) REFERENCES Education (EduNum),
+	FOREIGN KEY (PNum) REFERENCES ProductionUnit (PNum)
+);
+
 CREATE TABLE Limits (
 	LimitationCode INT,
 	SpecNum INT,
@@ -183,13 +209,13 @@ CREATE TABLE Limits (
 );
 
 CREATE TABLE Distance (
-	PNum INT,
+	PostalCode INT,
 	FacilityID INT,
 	Km FLOAT,
 	Hours INT,
 	Minutes INT,
-	PRIMARY KEY (PNum, FacilityID),
-	FOREIGN KEY (PNum) REFERENCES ProductionUnit (PNum),
+	PRIMARY KEY (PostalCode, FacilityID),
+	FOREIGN KEY (PostalCode) REFERENCES PostalArea (PostalCode),
 	FOREIGN KEY (FacilityID) REFERENCES Facility (ID)
 );
 

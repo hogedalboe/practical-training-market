@@ -112,7 +112,7 @@ class KrakScraper:
 
     def acceptCookies(self):
         try:
-            WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//*[@id='qc-cmp2-ui']/div[2]/div/button[3]"))).click()
+            WebDriverWait(self.driver, config.defaultTimeout).until(EC.element_to_be_clickable((By.XPATH, "//*[@id='qc-cmp2-ui']/div[2]/div/button[3]"))).click()
         except:
             pass
     

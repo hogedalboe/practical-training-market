@@ -19,3 +19,4 @@ defaultTimeout = 5
 ratelimit = 1
 chromedriverPath = os.path.join(cwd, 'chromedriver.exe')
 url_Krak = "https://map.krak.dk/?mode=route"
+url_Proff_base = "https://proff.dk/"
