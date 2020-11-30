@@ -1,0 +1,4 @@
+Product: Danmarks Administrative Geografiske Inddeling 1:10.000
+Source: Kortforsyningen, Styrelsen for Dataforsyning og Effektivisering
+Url: https://download.kortforsyningen.dk/content/danmarks-administrative-geografiske-inddeling-110000
+

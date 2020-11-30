@@ -89832,7 +89832,6 @@ postalcode;city;id;km;hours;minutes;
 4871;Horbelev;163;320;3;56
 4871;Horbelev;164;124.9;2;24
 1318;København K;193;299.7;3;19
-1318;København K;193;299.7;3;19
 9750;Østervrå;117;134.5;1;37
 9750;Østervrå;118;53;0;42
 9750;Østervrå;119;254.4;2;39
