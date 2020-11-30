@@ -9,10 +9,10 @@ user = "postgres"
 password = "Bavian2018*"
 
 # File paths.
-file_log = os.path.join(cwd, 'data', 'log.txt')
-file_distances = os.path.join(cwd, 'data', 'distances.txt')
-distances_facility_issue = os.path.join(cwd, 'data', 'distances_facility_issue.txt')
-file_financials = os.path.join(cwd, 'data', 'financials.txt')
+file_log = os.path.join(cwd, 'scrapedata', 'log.txt')
+file_distances = os.path.join(cwd, 'scrapedata', 'distances.txt')
+distances_facility_issue = os.path.join(cwd, 'scrapedata', 'distances_facility_issue.txt')
+file_financials = os.path.join(cwd, 'scrapedata', 'financials.txt')
 
 # Scraping.
 defaultTimeout = 5
