@@ -2,8 +2,10 @@ import numpy as np
 import pandas as pd
 import shapefile as shp
 import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
 import seaborn as sns
 import os
+import collections
 
 cwd = os.path.dirname(__file__)
 
@@ -13,7 +15,7 @@ cwd = os.path.dirname(__file__)
 
 class GeographicalVisualizer:
 
-    def __init__(self, dict_SubnationalColor, path_Shapefile, sf_SubnationalColumn):
+    def __init__(self, dict_SubnationalColor, path_Shapefile, sf_SubnationalColumn, dict_ColorScale):
         """
         Example parameters:
             dict_SubnationalColor={'Thisted':'rosybrown', 'Lemvig':'darkred'},
@@ -23,6 +25,7 @@ class GeographicalVisualizer:
 
         self.dict_SubnationalColor = dict_SubnationalColor
         self.sf_SubnationalColumn = sf_SubnationalColumn
+        self.dict_ColorScale = collections.OrderedDict(sorted(dict_ColorScale.items()))
 
         # Initializing vizualization set.
         sns.set(style="whitegrid", palette="pastel", color_codes=True)
@@ -46,13 +49,43 @@ class GeographicalVisualizer:
         df = df.assign(coords=shps)
         return df
     
-    def plot_map(self, output_filename, boundaryColor='black', title='', figsize=(30,25), gridColor='white', showAxes=False, x_lim=None, y_lim=None):
+    def plot_map(self, 
+        output_filename, 
+        boundaryColor='black', 
+        title='', 
+        figsize=(30,25), 
+        gridColor='white', 
+        showAxes=False, 
+        scaleTextBefore='> ', 
+        scaleTextAfter=' km',
+        scaleTextAdjustLeft=25000,
+         x_lim=None, y_lim=None):
+
         plt.clf()
         self.output_filename = output_filename
 
         plt.figure(figsize = figsize)
         fig, ax = plt.subplots(figsize = figsize)
         fig.suptitle(title, fontsize=48)
+
+        # Color palette and scale values.
+        xpos_rectangle = 865000
+        ypos_rectangle = 6380000
+        widthHeight = 35000
+        for key, color in self.dict_ColorScale.items():
+
+            # Scale value text.
+            ax.text(xpos_rectangle-15000-scaleTextAdjustLeft, 
+                ypos_rectangle+(widthHeight/2), 
+                scaleTextBefore+str(key)+scaleTextAfter, 
+                size=25, 
+                color='black'
+            )
+
+            # Rectangle.
+            rect = Rectangle((xpos_rectangle, ypos_rectangle), widthHeight, widthHeight, color=color)
+            ax.add_patch(rect)
+            ypos_rectangle -= widthHeight
 
         # Subnational boundaries.
         for shape in self.sf.shapeRecords():
@@ -87,4 +120,4 @@ class GeographicalVisualizer:
         
         # Save map.
         plt_path = os.path.join(cwd, "output", self.output_filename)
-        plt.savefig(plt_path)
+        plt.savefig(plt_path, bbox_inches='tight', transparent="True", pad_inches=0)
