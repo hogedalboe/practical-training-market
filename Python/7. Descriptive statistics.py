@@ -1,4 +1,4 @@
-import visualization.geodata.geodata as gd
+import visualization.heatmap.heatmap as hm
 import config
 import objects
 
@@ -27,7 +27,7 @@ for i, row in df_MunicipalityCommute.iterrows():
         if row['avgcommutekm'] > key:
             dict_HeatMap['0'+str(int(row['municipalitycode']))] = color
 
-gd.GeographicalVisualizer(dict_SubnationalColor=dict_HeatMap, 
+hm.GeographicalVisualizer(dict_SubnationalColor=dict_HeatMap, 
     path_Shapefile='KOMMUNE.shp', 
     sf_SubnationalColumn="KOMKODE", 
     dict_ColorScale=dict_ColorScales['blue']

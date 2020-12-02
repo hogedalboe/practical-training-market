@@ -97,6 +97,8 @@ class GeographicalVisualizer:
         for subnational, color in self.dict_SubnationalColor.items():
             dfIndexes = list(self.df_Shapes[self.df_Shapes[self.sf_SubnationalColumn] == subnational].index)
 
+            #indicateName = True
+
             for dfIndex in dfIndexes:
                 shape_ex = self.sf.shape(dfIndex)
                 x_lon = np.zeros((len(shape_ex.points),1))
@@ -106,7 +108,14 @@ class GeographicalVisualizer:
                     x_lon[ip] = shape_ex.points[ip][0]
                     y_lat[ip] = shape_ex.points[ip][1]
 
-                ax.fill(x_lon,y_lat, color)
+                ax.fill(x_lon, y_lat, color)
+
+                # Subnational name.
+                #if indicateName == True:
+                #    x0 = np.mean(x_lon)
+                #    y0 = np.mean(y_lat)
+                #    plt.text(x0, y0, 'test', fontsize=10, color='white')
+                #    indicateName = False
         
         if (x_lim != None) & (y_lim != None):     
             plt.xlim(x_lim)
@@ -119,5 +128,5 @@ class GeographicalVisualizer:
             ax.get_yaxis().set_visible(False)
         
         # Save map.
-        plt_path = os.path.join(cwd, "output", self.output_filename)
-        plt.savefig(plt_path, bbox_inches='tight', transparent="True", pad_inches=0)
+        plt_path = os.path.join(cwd, 'output', self.output_filename)
+        plt.savefig(plt_path, bbox_inches='tight', transparent='True', pad_inches=0)

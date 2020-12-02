@@ -135,7 +135,7 @@ def insertFinancialData():
                 if not str(cvrnum)+str(pubyear) in dbKeys:
 
                     # Insert route in database.
-                    sql = """INSERT INTO financial(cvrnum, pubyear, liquidityratio, roi, solvencyratio, netturnover, grossprofit, equity, netresult, currency) VALUES({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9});""".format(
+                    sql = """INSERT INTO financial(cvrnum, pubyear, liquidityratio, roi, solvencyratio, netturnover, grossprofit, equity, netresult, currency) VALUES({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, '{9}');""".format(
                         cvrnum,
                         pubyear,
                         liquidityratio,
@@ -147,6 +147,7 @@ def insertFinancialData():
                         netresult,
                         currency
                     )
+
                     db.Insert(sql)
 
                     # Avoid duplicate keys.
@@ -173,8 +174,75 @@ def insertFinancialData():
         for duplicate in duplicates:
             print("\t\t" + duplicate)
 
-insertFinancialData()
+#insertFinancialData()
 
+################################################################################################################ Proff company data
+
+def insertCompanyData():
+    count = 0
+
+    # Duplicate key control.
+    dbKeys = []
+    duplicates = []
+
+    # Read the financial data line by line.
+    financials = getFileLines(config.file_financials)
+    for i, financial in enumerate(financials):
+
+        if i > 0:
+            financialElements = financial.split(";")
+
+            # Financial data must have six elements to be valid.
+            if len(financialElements) == 13:
+
+                cvrnum = financialElements[0]
+
+                employees = financialElements[1]
+                if employees == "-":
+                    employees = "NULL"
+                else:
+                    # Only use the highest value in range.
+                    employees = employees.split(' - ')[0].Trim()
+                
+                established = financialElements[2]
+                if established == "-":
+                    established = "NULL"
+
+                # Avoid duplicate keys.
+                if not str(cvrnum) in dbKeys:
+
+                    # Insert route in database.
+                    sql = """UPDATE weather SET temp_lo = temp_lo+1, temp_hi = temp_lo+15, prcp = DEFAULT WHERE city = 'San Francisco' AND date = '2003-07-03'""".format(
+                        cvrnum,
+                        employees,
+                        established
+                    )
+
+                    db.Insert(sql)
+
+                    # Avoid duplicate keys.
+                    dbKeys.append(str(cvrnum))
+
+                    # Manage insertion chunk sizes.
+                    count += 1
+
+                else:
+                    duplicates.append(financial)
+                    print("Key value (cvrnum, pubyear)=({0},{1}) violates unique constraint and was not inserted.".format(cvrnum,pubyear))
+
+            else:
+                print("Omitted financial data '{0}' due to missing data in the observation.".format(financial))
+        
+        if count > chunkLimit:
+            db.Commit()
+            count = 0
+
+    db.Commit()
+
+    if len(duplicates) > 0:
+        print("The following {0} observations are duplicates and were not inserted into the database:".format(str(len(duplicates))))
+        for duplicate in duplicates:
+            print("\t\t" + duplicate)
 
 
 

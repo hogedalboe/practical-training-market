@@ -8,6 +8,7 @@ from selenium.webdriver.chrome.options import Options
 import psycopg2
 import pandas
 import numpy
+import time
 from datetime import datetime
 
 import config
