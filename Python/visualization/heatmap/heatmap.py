@@ -15,7 +15,7 @@ cwd = os.path.dirname(__file__)
 
 class GeographicalVisualizer:
 
-    def __init__(self, dict_SubnationalColor, path_Shapefile, sf_SubnationalColumn, dict_ColorScale):
+    def __init__(self, dict_SubnationalColor, path_Shapefile, sf_SubnationalColumn, dict_ColorScale={}):
         """
         Example parameters:
             dict_SubnationalColor={'Thisted':'rosybrown', 'Lemvig':'darkred'},
@@ -56,9 +56,10 @@ class GeographicalVisualizer:
         figsize=(30,25), 
         gridColor='white', 
         showAxes=False, 
-        scaleTextBefore='> ', 
-        scaleTextAfter=' km',
+        scaleTextBefore='', 
+        scaleTextAfter='',
         scaleTextAdjustLeft=25000,
+        scaleValueTextSize=25,
          x_lim=None, y_lim=None):
 
         plt.clf()
@@ -78,8 +79,9 @@ class GeographicalVisualizer:
             ax.text(xpos_rectangle-15000-scaleTextAdjustLeft, 
                 ypos_rectangle+(widthHeight/2), 
                 scaleTextBefore+str(key)+scaleTextAfter, 
-                size=25, 
-                color='black'
+                size=scaleValueTextSize, 
+                color='black',
+                fontfamily='Franklin Gothic Medium'
             )
 
             # Rectangle.

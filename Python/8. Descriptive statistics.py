@@ -29,12 +29,11 @@ for i, row in df_MunicipalityCommute.iterrows():
 
 hm.GeographicalVisualizer(dict_SubnationalColor=dict_HeatMap, 
     path_Shapefile='KOMMUNE.shp', 
-    sf_SubnationalColumn="KOMKODE", 
-    dict_ColorScale=dict_ColorScales['blue']
-).plot_map('test.png', 
-    scaleTextBefore='> ', 
-    scaleTextAfter=' km', 
-    scaleTextAdjustLeft=25000
-)
+    sf_SubnationalColumn='KOMKODE', 
+    dict_ColorScale=dict_ColorScales['blue']).plot_map('test.png', 
+        scaleTextBefore='> ', 
+        scaleTextAfter=' km', 
+        scaleTextAdjustLeft=25000
+    )
 
 ################################################################################################################################ ...
