@@ -33,17 +33,17 @@ for i, row_orig in dfApprovals.iterrows():
         # Find other approvals for the same production unit and education.
         temp_dfApprovals = dfApprovals.loc[(dfApprovals['pnum'] == row_orig['pnum']) & (dfApprovals['edunum'] == row_orig['edunum'])]
 
-        # Handle approvals with limitations implying overlap.
-        if len(temp_dfLimits.index) > 0:
+        # Only relevant to accumulate if the production unit has more than one approval within the education.
+        if len(temp_dfApprovals.index) > 1:
 
-            # Only relevant if more than one approval within the education.
-            if len(temp_dfApprovals.index) > 1:
+            # Handle approvals with limitations implying overlap.
+            if len(temp_dfLimits.index) > 0:
 
                 employed = 0
                 highest = 0
 
                 for j, row_temp in temp_dfApprovals.iterrows():
-                    # Accumulate to number of employed students.
+                    # Accumulate the number of employed students.
                     employed += row_temp['currentamount']
 
                     # The approval with the highest amount of allowed students within a production unit's overlapping approvals is the true amount.
@@ -52,14 +52,17 @@ for i, row_orig in dfApprovals.iterrows():
                 
                 dfCombinedApprovals.loc[len(dfCombinedApprovals)] = [row_orig['edunum'], row_orig['pnum'], highest, employed]
 
-            # Otherwise just let the one approval cover the whole education and add it to the dataframe for the combined approvals.
+            # No limitations implying overlap.
             else:
-                dfCombinedApprovals.loc[len(dfCombinedApprovals)] = [row_orig['edunum'], row_orig['pnum'], row_orig['approvalamount'], row_orig['currentamount']]
+                # Combine by accumulation of values if there's more than one approval within an education for the production unit.
+                # A pitfall might be, that some approvals, without limitation codes implying any overlap, are in fact overlapping, thereby resulting in incorrecty high approval amounts for some production units.
+                # It was not possible to find a durable procedure to account for these unregistered overlaps, and it will have to suffice to simply accumulate approvalamount and currentamount values.
+                pass
 
-        # No limitations implying overlap.
+
+        # Otherwise just let the one approval cover the whole education and add it to the dataframe for the combined approvals.
         else:
-            # Combine by accumulation of values if there's more than one approval within an education for the production unit.
-            pass
+            dfCombinedApprovals.loc[len(dfCombinedApprovals)] = [row_orig['edunum'], row_orig['pnum'], row_orig['approvalamount'], row_orig['currentamount']]
 
         handled.append(str(row_orig['pnum'])+str(row_orig['edunum']))
 
