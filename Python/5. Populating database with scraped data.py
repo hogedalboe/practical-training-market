@@ -77,7 +77,7 @@ def insertRoutingData():
         for duplicate in duplicates:
             print("\t\t" + duplicate)
 
-#insertRoutingData()
+insertRoutingData()
 
 ################################################################################################################ Proff financial data
 
@@ -174,7 +174,7 @@ def insertFinancialData():
         for duplicate in duplicates:
             print("\t\t" + duplicate)
 
-#insertFinancialData()
+insertFinancialData()
 
 ################################################################################################################ Proff company data
 
@@ -202,7 +202,7 @@ def insertCompanyData():
                     employees = "NULL"
                 else:
                     # Only use the highest value in range.
-                    employees = employees.split(' - ')[0].Trim()
+                    employees = employees.split(' - ')[0].strip()
                 
                 established = financialElements[2]
                 if established == "-":
@@ -212,12 +212,12 @@ def insertCompanyData():
                 if not str(cvrnum) in dbKeys:
 
                     # Insert route in database.
-                    sql = """UPDATE weather SET temp_lo = temp_lo+1, temp_hi = temp_lo+15, prcp = DEFAULT WHERE city = 'San Francisco' AND date = '2003-07-03'""".format(
-                        cvrnum,
+                    sql = """UPDATE company SET employees = {0}, established = TO_DATE('{1}0101','YYYYMMDD') WHERE cvrnum = {2}""".format(
                         employees,
-                        established
+                        established,
+                        cvrnum
                     )
-
+                    print(sql)
                     db.Insert(sql)
 
                     # Avoid duplicate keys.
@@ -228,7 +228,7 @@ def insertCompanyData():
 
                 else:
                     duplicates.append(financial)
-                    print("Key value (cvrnum, pubyear)=({0},{1}) violates unique constraint and was not inserted.".format(cvrnum,pubyear))
+                    print("Key value (cvrnum)=({0}) violates unique constraint and was not inserted.".format(cvrnum))
 
             else:
                 print("Omitted financial data '{0}' due to missing data in the observation.".format(financial))
@@ -244,5 +244,5 @@ def insertCompanyData():
         for duplicate in duplicates:
             print("\t\t" + duplicate)
 
-
+insertCompanyData()
 
