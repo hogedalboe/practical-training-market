@@ -68,7 +68,7 @@ for i, row_orig in dfApprovals.iterrows():
                     approved += row_temp['approvalamount']
 
                 # Add combined approval.
-                dfCombinedApprovals.loc[len(dfCombinedApprovals)] = [row_orig['edunum'], row_orig['pnum'], highest, employed]
+                dfCombinedApprovals.loc[len(dfCombinedApprovals)] = [row_orig['edunum'], row_orig['pnum'], approved, employed]
 
         # Otherwise just let the one approval cover the whole education and add it to the dataframe for the combined approvals.
         else:

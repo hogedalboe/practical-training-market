@@ -246,3 +246,6 @@ def insertCompanyData():
 
 insertCompanyData()
 
+################################################################################################################################ Disconnect database
+
+db.Disconnect()

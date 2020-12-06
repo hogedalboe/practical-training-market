@@ -139,6 +139,41 @@ print("The shortes travel distances are:\n{0}\n".format(df_Nearest.sort_values([
 
 ############################################################################################################################################## Insert routes in the database
 
+# Chunk size limit of the database (no more than 1000 observation should be inserted at once).
+chunkLimit = 500
+count = 0
+
+# iterate routes and write them to the database (travel time in minutes is ignored due to authenticity concerns and unrealistic values).
+for i, distance in df_Nearest.iterrows():
+
+    # Insert route in database.
+    sql = """UPDATE combinedapproval SET nearestfacilitykm = {0} WHERE edunum = {1} AND pnum = {2}""".format(
+        distance['nearestfacilitykm'],
+        distance['edunum'],
+        distance['pnum']
+    )
+
+    print(sql)
+    db.Insert(sql)
+
+    # Manage insertion chunk sizes.
+    count += 1
+
+    # Commit every n queries.
+    if count > chunkLimit:
+        db.Commit()
+        count = 0
+
+db.Commit()
+
+# Delete distances in the database where nearest facility is more than 800 km away (unrealistic distance in Denmark).
+input("Press any key to delete combined approvals in the database where the nearest facility is more than 800 km away...")
+db.Insert("""DELETE FROM combinedapproval WHERE nearestfacilitykm > 800""")
+db.Commit()
+
+################################################################################################################################ Disconnect database
+
+db.Disconnect()
 
 
 

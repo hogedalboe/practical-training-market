@@ -4,17 +4,75 @@ import objects
 
 db = objects.Database(config.server, config.database, config.user, config.password)
 
+# Get all data of relevance for the descriptive statistical analysis.
+df_Master = db.Read(
+    """
+    SELECT 
+        combinedapproval.pnum,
+        productionunit.cvrnum,
+        combinedapproval.edunum,
+        productionunit.postalcode,
+        municipality.municipalitycode,
+        region.regioncode,
+        combinedapproval.approvalamount, 
+        combinedapproval.currentamount, 
+        combinedapproval.nearestfacilitykm,
+        company.sectorcode,
+        company.businesscode,
+        company.employees,
+        extract(year FROM company.established)::int as established,
+        education.committeecode,
+        financial.pubyear,
+        financial.liquidityratio,
+        financial.roi,
+        financial.solvencyratio,
+        financial.netturnover,
+        financial.grossprofit,
+        financial.equity,
+        financial.netresult,
+        financial.balance,
+        financial.currency
+        
+        FROM combinedapproval
+        
+            LEFT JOIN productionunit on productionunit.pnum = combinedapproval.pnum
+            LEFT JOIN company on company.cvrnum = productionunit.cvrnum
+            LEFT JOIN education on education.edunum = combinedapproval.edunum
+            LEFT JOIN financial on financial.cvrnum = company.cvrnum 
+                AND financial.pubyear > 2017
+                AND financial.currency = 'DKK'
+                AND financial.pubyear = (SELECT MAX(pubyear) FROM financial WHERE financial.cvrnum = company.cvrnum)
+            LEFT JOIN postalarea on postalarea.postalcode = productionunit.postalcode
+            LEFT JOIN municipality on municipality.municipalitycode = postalarea.municipalitycode
+            LEFT JOIN region on region.regioncode = municipality.regioncode
+
+    WHERE approvalamount <> 0
+            
+
+            
+	
+            
+	
+
+            
+        
+    """
+)
+
 ################################################################################################################################ Determine ratio values between approvals and combined approvals
 
-df_approvals = db.Read("SELECT * FROM approval")
-df_combinedapprovals = db.Read("SELECT * FROM combinedapproval")
+def approvalRatios():
+    df_approvals = db.Read("SELECT * FROM approval")
+    df_combinedapprovals = db.Read("SELECT * FROM combinedapproval")
 
-# Get the ratio between 
-approvalRatio = df_approvals['approvalamount'].mean() / df_approvals['currentamount'].mean()
-combinedapprovalRatio = df_combinedapprovals['approvalamount'].mean() / df_combinedapprovals['currentamount'].mean()
+    # Get the ratio between 
+    approvalRatio = df_approvals['approvalamount'].mean() / df_approvals['currentamount'].mean()
+    combinedapprovalRatio = df_combinedapprovals['approvalamount'].mean() / df_combinedapprovals['currentamount'].mean()
 
-print(str(approvalRatio))
-print(str(combinedapprovalRatio))
+    print(str(approvalRatio))
+    print(str(combinedapprovalRatio))
+
+#approvalRatios()
 
 ################################################################################################################################ ...
 
@@ -54,3 +112,16 @@ hm.GeographicalVisualizer(dict_SubnationalColor=dict_HeatMap,
         scaleTextAfter=' km', 
         scaleTextAdjustLeft=25000
     )
+
+
+
+
+
+
+
+
+
+
+################################################################################################################################ Disconnect database
+
+db.Disconnect()
