@@ -22,6 +22,11 @@ df_Master = db.Read(
         company.employees,
         extract(year FROM company.established)::int as established,
         education.committeecode,
+        municipalitydemographics.yearofmeasurement,
+        municipalitydemographics.avgcommutekm,
+        municipalitydemographics.employmentrate,
+        municipalitydemographics.employmentavailabilityrate,
+        municipalitydemographics.yearlydisposableincome,
         financial.pubyear,
         financial.liquidityratio,
         financial.roi,
@@ -45,19 +50,15 @@ df_Master = db.Read(
             LEFT JOIN postalarea on postalarea.postalcode = productionunit.postalcode
             LEFT JOIN municipality on municipality.municipalitycode = postalarea.municipalitycode
             LEFT JOIN region on region.regioncode = municipality.regioncode
+            LEFT JOIN municipalitydemographics on municipalitydemographics.municipalitycode = municipality.municipalitycode
+                AND municipalitydemographics.yearofmeasurement = 2018
 
-    WHERE approvalamount <> 0
-            
-
-            
-	
-            
-	
-
-            
-        
+    WHERE approvalamount <> 0   
     """
 )
+
+print(df_Master.head(5))
+input("stop")
 
 ################################################################################################################################ Determine ratio values between approvals and combined approvals
 
