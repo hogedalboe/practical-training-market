@@ -191,7 +191,6 @@ CREATE TABLE CombinedApproval (
 	ApprovalAmount FLOAT,
 	CurrentAmount FLOAT,
 	NearestFacilityKm FLOAT,
-	NearestFacilityHours FLOAT,
 	NearestFacilityMinutes FLOAT,
 	PRIMARY KEY (EduNum, PNum),
 	FOREIGN KEY (EduNum) REFERENCES Education (EduNum),

@@ -6,6 +6,20 @@ db = objects.Database(config.server, config.database, config.user, config.passwo
 
 ################################################################################################################################ Determine ratio values between approvals and combined approvals
 
+df_approvals = db.Read("SELECT * FROM approval")
+df_combinedapprovals = db.Read("SELECT * FROM combinedapproval")
+
+# Get the ratio between 
+approvalRatio = df_approvals['approvalamount'].mean() / df_approvals['currentamount'].mean()
+combinedapprovalRatio = df_combinedapprovals['approvalamount'].mean() / df_combinedapprovals['currentamount'].mean()
+
+print(str(approvalRatio))
+print(str(combinedapprovalRatio))
+
+################################################################################################################################ ...
+
+
+
 
 
 
@@ -40,6 +54,3 @@ hm.GeographicalVisualizer(dict_SubnationalColor=dict_HeatMap,
         scaleTextAfter=' km', 
         scaleTextAdjustLeft=25000
     )
-
-################################################################################################################################ ...
-
