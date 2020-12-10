@@ -58,8 +58,17 @@ CREATE TABLE Education (
 CREATE TABLE Region (
 	RegionCode INT,
 	Name VARCHAR(100) NOT NULL,
-	PRIMARY KEY (RegionCode)
+	PRIMARY KEY (yearofmeasurement, RegionCode)
 );
+
+CREATE TABLE RegionDemographics (
+	yearofmeasurement INT,
+	RegionCode INT,
+	population INT,
+	PRIMARY KEY (RegionCode),
+	FOREIGN KEY (RegionCode) REFERENCES Region (RegionCode)
+);
+
 
 CREATE TABLE Municipality (
 	MunicipalityCode INT,
@@ -69,6 +78,18 @@ CREATE TABLE Municipality (
 	FOREIGN KEY (RegionCode) REFERENCES Region (RegionCode)
 );
 
+CREATE TABLE MunicipalityDemographics (
+	yearofmeasurement INT,
+	MunicipalityCode INT,
+	population INT,
+	avgcommutekm FLOAT,
+	employmentrate FLOAT,
+	employmentavailabilityrate FLOAT,
+	yearlydisposableincome FLOAT,
+	PRIMARY KEY (yearofmeasurement, MunicipalityCode),
+	FOREIGN KEY (MunicipalityCode) REFERENCES Municipality (MunicipalityCode)
+);
+
 CREATE TABLE PostalArea (
 	PostalCode INT,
 	MunicipalityCode INT,
@@ -76,17 +97,6 @@ CREATE TABLE PostalArea (
 	PRIMARY KEY (PostalCode),
 	FOREIGN KEY (MunicipalityCode) REFERENCES Municipality (MunicipalityCode)
 );
-
-CREATE TABLE MunicipalityDemographics (
-	yearofmeasurement INT,
-	MunicipalityCode INT,
-	avgcommutekm FLOAT,
-	employmentrate FLOAT,
-	employmentavailabilityrate FLOAT,
-	yearlydisposableincome FLOAT,
-	PRIMARY KEY (yearofmeasurement, MunicipalityCode),
-	FOREIGN KEY (MunicipalityCode) REFERENCES Municipality (MunicipalityCode)
-)
 
 CREATE TABLE Facility (
 	ID SERIAL,

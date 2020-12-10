@@ -147,7 +147,7 @@ count = 0
 for i, distance in df_Nearest.iterrows():
 
     # Insert route in database.
-    sql = """UPDATE combinedapproval SET nearestfacilitykm = {0} WHERE edunum = {1} AND pnum = {2}""".format(
+    sql = """UPDATE combinedapproval SET nearestfacilitykm = {0} WHERE edunum = {1} AND pnum = {2};""".format(
         distance['nearestfacilitykm'],
         distance['edunum'],
         distance['pnum']
