@@ -9,6 +9,7 @@ SELECT
 	regiondemographics.population as regionpopulation,
 	combinedapproval.approvalamount, 
 	combinedapproval.currentamount, 
+	combinedapproval.currentamount / combinedapproval.approvalamount as propensity,
 	combinedapproval.nearestfacilitykm,
 	company.sectorcode,
 	company.businesscode,
@@ -40,13 +41,15 @@ SELECT
 		LEFT JOIN financial on financial.cvrnum = company.cvrnum 
 			AND financial.pubyear > 2017
 			AND financial.currency = 'DKK'
-			AND financial.pubyear = (SELECT MAX(pubyear) FROM financial WHERE financial.cvrnum = company.cvrnum)
+			AND financial.pubyear = (
+				SELECT MAX(pubyear) FROM financial WHERE financial.cvrnum = company.cvrnum
+			)
 		LEFT JOIN postalarea on postalarea.postalcode = productionunit.postalcode
 		LEFT JOIN municipality on municipality.municipalitycode = postalarea.municipalitycode
 		LEFT JOIN municipalitydemographics on municipalitydemographics.municipalitycode = municipality.municipalitycode
 			AND municipalitydemographics.yearofmeasurement = 2018
 		LEFT JOIN region on region.regioncode = municipality.regioncode
 		LEFT JOIN regiondemographics on regiondemographics.regioncode = region.regioncode
-			AND municipalitydemographics.yearofmeasurement = 2018
+			AND regiondemographics.yearofmeasurement = 2019
 
-WHERE approvalamount <> 0   
+WHERE combinedapproval.approvalamount <> 0   

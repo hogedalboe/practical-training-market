@@ -3,58 +3,13 @@ import objects
 
 db = objects.Database(config.server, config.database, config.user, config.password)
 
-# Get all data of relevance for the descriptive statistical analysis.
-df_Master = db.Read(
-    """
-    SELECT 
-        combinedapproval.pnum,
-        productionunit.cvrnum,
-        combinedapproval.edunum,
-        productionunit.postalcode,
-        municipality.municipalitycode,
-        region.regioncode,
-        combinedapproval.approvalamount, 
-        combinedapproval.currentamount, 
-        combinedapproval.nearestfacilitykm,
-        company.sectorcode,
-        company.businesscode,
-        company.employees,
-        extract(year FROM company.established)::int as established,
-        education.committeecode,
-        municipalitydemographics.yearofmeasurement,
-        municipalitydemographics.avgcommutekm,
-        municipalitydemographics.employmentrate,
-        municipalitydemographics.employmentavailabilityrate,
-        municipalitydemographics.yearlydisposableincome,
-        financial.pubyear,
-        financial.liquidityratio,
-        financial.roi,
-        financial.solvencyratio,
-        financial.netturnover,
-        financial.grossprofit,
-        financial.equity,
-        financial.netresult,
-        financial.balance,
-        financial.currency
-        
-        FROM combinedapproval
-        
-            LEFT JOIN productionunit on productionunit.pnum = combinedapproval.pnum
-            LEFT JOIN company on company.cvrnum = productionunit.cvrnum
-            LEFT JOIN education on education.edunum = combinedapproval.edunum
-            LEFT JOIN financial on financial.cvrnum = company.cvrnum 
-                AND financial.pubyear > 2017
-                AND financial.currency = 'DKK'
-                AND financial.pubyear = (SELECT MAX(pubyear) FROM financial WHERE financial.cvrnum = company.cvrnum)
-            LEFT JOIN postalarea on postalarea.postalcode = productionunit.postalcode
-            LEFT JOIN municipality on municipality.municipalitycode = postalarea.municipalitycode
-            LEFT JOIN region on region.regioncode = municipality.regioncode
-            LEFT JOIN municipalitydemographics on municipalitydemographics.municipalitycode = municipality.municipalitycode
-                AND municipalitydemographics.yearofmeasurement = 2018
+# Get query for obtaining master data.
+masterQuery = ""
+with open(r'C:\Users\hoged\OneDrive\Skrivebord\Speciale\Data\PostgreSQL\10. Master data query.sql', 'r') as f:
+    masterQuery = f.read()
 
-    WHERE approvalamount <> 0   
-    """
-)
+# Get all data of relevance for the descriptive statistical analysis.
+df_Master = db.Read(masterQuery)
 
 ################################################################################################################################ 
 
@@ -63,7 +18,32 @@ df_Master = db.Read(
 
 
 
-################################################################################################################################ Test: Multiple linear regression
+
+
+
+
+
+
+
+
+
+
+
+
+
+################################################################################################################################ Test: Multiple linear regression with scikit-learn
+
+# https://stackabuse.com/linear-regression-in-python-with-scikit-learn/
+
+
+
+
+
+
+
+
+
+################################################################################################################################ Test: Multiple linear regression with statsmodels
 
 # https://datatofish.com/statsmodels-linear-regression/
 
@@ -71,11 +51,24 @@ import statsmodels.api as sm
 
 # Does geographical variables influence the current amount of employed students?
 df_Geography = df_Master[['currentamount', 'nearestfacilitykm', 'avgcommutekm']].dropna()
+print("n = " + str(len(df_Geography.index)))
+omitted = len(df_Master.index)-len(df_Geography.index)
+print(str(omitted) + " observations were omitted due to missing values.")
 
-X = df_Geography[['nearestfacilitykm', 'avgcommutekm']]
-Y = df_Geography['currentamount']
+X = df_Geography['avgcommutekm']
+Y = df_Geography['nearestfacilitykm']
+
+# Scatter plot.
+import matplotlib.pyplot as plt
+plt.scatter(X, Y)
+plt.show()
+
+#X = df_Geography[['nearestfacilitykm', 'avgcommutekm']]
+
+# Add the intercept (https://stackoverflow.com/questions/20701484/why-do-i-get-only-one-parameter-from-a-statsmodels-ols-fit).
 X = sm.add_constant(X)
 
 model = sm.OLS(Y, X).fit()
 print_model = model.summary()
 print(print_model)
+print("f-value: " + str(float(model.fvalue)))
