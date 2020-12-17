@@ -165,7 +165,7 @@ def univariate(column, x_name, countValue, continuous=True, color='blue', plot_n
     quartile_second = np.percentile(x, 50) # Median
     quartile_third = np.percentile(x, 75)
     IQR = quartile_third - quartile_first
-    print("\tQuartiles:\n\t\tFirst quartile (.25), Q1: {0}\n\t\tSecond quartile (.75), Q3: {1}\n\t\tInter quartile range (Q3-Q4), IQR: {2}".format(str(quartile_first),str(quartile_third),str(IQR)))
+    print("\tQuartiles:\n\t\tFirst quartile (.25), Q1: {0}\n\t\tSecond quartile (median), Q2: {1}\n\t\tThird quartile (.75), Q3: {2}\n\t\tInter quartile range (Q3-Q4), IQR: {3}".format(str(quartile_first),str(quartile_second),str(quartile_third),str(IQR)))
 
     # Outliers (https://www.kite.com/python/answers/how-to-remove-outliers-from-a-numpy-array-in-python).
     # Theoretical source: Agresti, A. 2018. Statistical methods for the social sciences. Fith edition, global edition., Boston: Pearson.
@@ -191,9 +191,9 @@ def univariate(column, x_name, countValue, continuous=True, color='blue', plot_n
         stat, p = scipy.stats.shapiro(univariate_data)
         #print('stat=%.3f, p=%.3f' % (stat, p))
         if p > 0.05:
-            print("\tShapiro-Wilk test of normality ({0}): The variable is probably Gaussian (p={1})".format(note, str(round(p,3))))
+            print("\tShapiro-Wilk test of normality ({0}): The variable is probably Gaussian (W = {1}, p={2})".format(note, str(round(stat,3)), str(round(p,3)))) # W = the test statistic
         else:
-            print("\tShapiro-Wilk test of normality ({0}): The variable is probably NOT Gaussian (p={1})".format(note, str(round(p,3))))
+            print("\tShapiro-Wilk test of normality ({0}): The variable is probably NOT Gaussian (W = {1}, p={2})".format(note, str(round(stat,3)), str(round(p,3))))
 
     shapiro_wilk(x, 'including outliers')
     shapiro_wilk(x_outliers_removed, 'outliers excluded')
@@ -201,24 +201,35 @@ def univariate(column, x_name, countValue, continuous=True, color='blue', plot_n
     print("-------------------------------------------------------")
 
     # Box plot for distribution (https://seaborn.pydata.org/generated/seaborn.boxplot.html).
+    boxplot_fontsize = 20
     sns.boxplot(x=x, color=color)
-    #plt.title("Outliers determined by inter-quartile range", loc='left', fontsize=plot_note_fontsize)
-    #plt.title("Mean = {0}".format(str(round(mean,3))), loc='center', fontsize=plot_note_fontsize)
-    #plt.title("n = {0}".format(str(len(x))), loc='right', fontsize=plot_note_fontsize)
+    plt.title("n = {0}".format(str(len(x))), loc='left', fontsize=boxplot_fontsize)
+    #plt.title("Range = [{0};{1}]".format(str(range_min),str(range_max)), loc='center', fontsize=boxplot_fontsize)
+    #plt.title("Mean = {0}".format(str(mean)), loc='right', fontsize=boxplot_fontsize)
     plt.xlabel("")
-    plt.xticks(fontsize=20)
+    plt.xticks(fontsize=boxplot_fontsize)
 
     plt.show()
     plt.clf()
     plt.close()
 
-univariate('approvalamount', 'Number of vocational students a production unit is approved for', 0.0, color='cornflowerblue')
-univariate('currentamount', 'Current number of employed vocational students', 0.0, color='orange')
-univariate('propensity', 'Propensity to employ vocational students', 0.0, color='green')
+#univariate('approvalamount', 'Number of vocational students a production unit is approved for', 0.0, color='cornflowerblue') # TODO: Uncomment
+#univariate('currentamount', 'Current number of employed vocational students', 0.0, color='orange')
+#univariate('propensity', 'Propensity to employ vocational students', 0.0, color='green')
 
+################################################################################################################################ Analyse dichotomous propensity observations
 
+df_Propensity = df_Master.loc[df_Master['propensity'] > 0.0]
 
+# Mean split
+propensity_mean = np.mean(df_Master['propensity'])
+print("Values less than the mean: " + str(len(df_Propensity[df_Propensity['propensity'] < propensity_mean].index)))
+print("Values equal to or higher than the mean: " + str(len(df_Propensity[df_Propensity['propensity'] >= propensity_mean].index)))
 
+# Median split
+propensity_median = np.median(df_Master['propensity'])
+print("Values less than the median: " + str(len(df_Propensity[df_Propensity['propensity'] < propensity_median].index)))
+print("Values equal to or higher than the median: " + str(len(df_Propensity[df_Propensity['propensity'] >= propensity_median].index)))
 
 
 
