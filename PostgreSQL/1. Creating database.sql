@@ -58,14 +58,14 @@ CREATE TABLE Education (
 CREATE TABLE Region (
 	RegionCode INT,
 	Name VARCHAR(100) NOT NULL,
-	PRIMARY KEY (yearofmeasurement, RegionCode)
+	PRIMARY KEY (RegionCode)
 );
 
 CREATE TABLE RegionDemographics (
 	yearofmeasurement INT,
 	RegionCode INT,
 	population INT,
-	PRIMARY KEY (RegionCode),
+	PRIMARY KEY (RegionCode, yearofmeasurement),
 	FOREIGN KEY (RegionCode) REFERENCES Region (RegionCode)
 );
 
