@@ -19,6 +19,10 @@ with open(r'C:\Users\hoged\OneDrive\Skrivebord\Speciale\Data\PostgreSQL\11. Mast
 # Get all data of relevance for the descriptive statistical analysis.
 df_Master = db.Read(masterQuery)
 
+################################################################################################################################ CSV backup
+
+#df_Master.to_csv(r'C:\Users\hoged\OneDrive\Skrivebord\Speciale\Data\Master data.csv', index=False, encoding='CP1252')
+
 ################################################################################################################################ Determine ratio values between approvals and combined approvals
 
 def approvalRatios():
@@ -277,51 +281,109 @@ plt.yticks(fontsize=14)
 plt.legend(prop={'size': 18})
 
 #plt.show()
+plt.clf()
+plt.close()
 
-################################################################################################################################ Numbers per education
+################################################################################################################################ Numbers per joint trade committee
 
 # Sum of propensity within each joint trade committee.
 df_EducationCommittee = df_Master[['committeename', 'propensity', 'currentnumber']]
-#df_EducationCommittee['committee_sum_propensity'] = df_EducationCommittee.groupby('committeename')['propensity'].transform('sum')
+df_EducationCommittee['committee_sum_propensity'] = df_EducationCommittee.groupby('committeename')['propensity'].transform('sum')
 
 # Sum of current numbers of employed students within each joint trade committee.
 df_EducationCommittee['committee_sum_currentnumber'] = df_Master.groupby('committeename')['currentnumber'].transform('sum')
 df_EducationCommittee = df_EducationCommittee.drop_duplicates(subset='committeename', keep="last")
-#df_EducationCommittee = df_EducationCommittee.loc[df_EducationCommittee['committee_sum_propensity'] > 0.0]
+df_EducationCommittee = df_EducationCommittee.loc[df_EducationCommittee['committee_sum_propensity'] > 0.0]
 #df_EducationCommittee = df_EducationCommittee.sort_values('committee_sum_propensity', ascending=False)
 
 # Get the committees with the highest and lowest propensity in relation to currently employed students.
-#df_EducationCommittee['CurrentPropensityRatio'] = df_EducationCommittee["committee_sum_propensity"] / df_EducationCommittee["committee_sum_propensity"]
-#df_EducationCommittee = df_EducationCommittee.sort_values('CurrentPropensityRatio', ascending=False)
+df_EducationCommittee['CurrentPropensityRatio'] = df_EducationCommittee["committee_sum_propensity"] / df_EducationCommittee["committee_sum_propensity"]
+df_EducationCommittee = df_EducationCommittee.sort_values('CurrentPropensityRatio', ascending=False)
 
 # Inspect dataframe
-print(df_EducationCommittee.head(10))
+#print(df_EducationCommittee.head(10))
+
+# Subtract the propensities from the current numbers so that the bars show the correct sums.
+df_EducationCommittee['committee_sum_currentnumber_subtracted'] = df_EducationCommittee['committee_sum_currentnumber'].sub(df_EducationCommittee['committee_sum_propensity'])
+
+# Prepare dataframe for bar chart.
+df_EducationCommittee = df_EducationCommittee[['committeename', 'committee_sum_propensity', 'committee_sum_currentnumber_subtracted']]
+#df_EducationCommittee['committeename'] = df_EducationCommittee['committeename'].str.slice(0,14)
+df_EducationCommittee.set_index('committeename', inplace=True)
+
+# Rename columns so that they are comprehensible in the plotted legend.
+df_EducationCommittee = df_EducationCommittee.rename(columns={"committee_sum_propensity": "Propensity", "committee_sum_currentnumber_subtracted": "Current number"})
+
+# Bar chart.
+propensity = df_EducationCommittee['Propensity'].values.flatten()
+currentnumber = df_EducationCommittee['Current number'].values.flatten()
+ind = np.arange(len(df_EducationCommittee.index))
+width = 0.35
+
+p1 = plt.bar(ind, propensity, width)
+p2 = plt.bar(ind, currentnumber, width, bottom=propensity)
+
+plt.ylabel('Current number of employed vocational students')
+plt.xticks(ind, list(df_EducationCommittee.index))
+plt.legend((p1[0], p2[0]), ('Propensity', 'Current number'))
+
+#plt.show()
+plt.clf()
+plt.close()
+
+################################################################################################################################ Numbers per sector
+
+# Sum of propensity within each sector.
+df_SectorCurrentNumber = df_Master[['sectorcode', 'sectorname', 'propensity', 'currentnumber']]
+df_SectorCurrentNumber['education_sum_propensity'] = df_SectorCurrentNumber.groupby('sectorcode')['propensity'].transform('sum')
+
+# Sum of current numbers of employed students within each sector.
+df_SectorCurrentNumber['education_sum_currentnumber'] = df_Master.groupby('sectorcode')['currentnumber'].transform('sum')
+df_SectorCurrentNumber = df_SectorCurrentNumber.drop_duplicates(subset='sectorname', keep="last")
+df_SectorCurrentNumber = df_SectorCurrentNumber.loc[df_SectorCurrentNumber['education_sum_currentnumber'] > 150.0]
+df_SectorCurrentNumber = df_SectorCurrentNumber.sort_values('education_sum_currentnumber', ascending=False)
+
+# Get the sectors with the highest and lowest propensity in relation to currently employed students.
+df_SectorCurrentNumber['CurrentPropensityRatio'] = df_SectorCurrentNumber["education_sum_currentnumber"] / df_SectorCurrentNumber["education_sum_propensity"]
+#df_SectorCurrentNumber = df_SectorCurrentNumber.sort_values('CurrentPropensityRatio', ascending=False)
+
+# Inspect dataframe
+#print(df_SectorCurrentNumber.head(30))
+
+# Subtract the propensities from the current numbers so that the bars show the correct sums.
+df_SectorCurrentNumber['education_sum_currentnumber_subtracted'] = df_SectorCurrentNumber['education_sum_currentnumber'].sub(df_SectorCurrentNumber['education_sum_propensity'])
+
+# Prepare dataframe for bar chart.
+df_SectorCurrentNumber = df_SectorCurrentNumber[['sectorname', 'education_sum_propensity', 'education_sum_currentnumber_subtracted']]
+df_SectorCurrentNumber['sectorname'] = df_SectorCurrentNumber['sectorname'].str.slice(0,80)
+df_SectorCurrentNumber.set_index('sectorname', inplace=True)
+
+# Rename columns so that they are comprehensible in the plotted legend.
+df_SectorCurrentNumber = df_SectorCurrentNumber.rename(columns={"education_sum_propensity": "Propensity", "education_sum_currentnumber_subtracted": "Current number"})
+
+# Bar chart
+ax = df_SectorCurrentNumber.plot.barh(stacked=True)
+
+# Add labels
+ax.set_ylabel("", fontsize=14)
+ax.set_xlabel("Current number of employed vocational students", fontsize=18)
+
+plt.xticks(fontsize=16)
+plt.yticks(fontsize=14)
+
+plt.legend(prop={'size': 18})
+
+#plt.savefig(r'C:\Users\hoged\OneDrive\Skrivebord\Speciale\Data\test.png', bbox_inches='tight')
+
+#plt.show()
+plt.clf()
+plt.close()
+
+################################################################################################################################ Numbers per business type
 
 
 
 
-input("STOP")
-
-
-
-
-## Get the educations with the highest and lowest propensity in relation to currently employed students.
-#df_EducationCurrentNumber['CurrentPropensityRatio'] = df_EducationCurrentNumber["education_sum_currentnumber"] / df_EducationCurrentNumber["education_sum_propensity"]
-##df_EducationCurrentNumber = df_EducationCurrentNumber.sort_values('CurrentPropensityRatio', ascending=False)
-#
-## Inspect dataframe
-##print(df_EducationCurrentNumber.head(30))
-#
-## Subtract the propensities from the current numbers so that the bars show the correct sums.
-#df_EducationCurrentNumber['education_sum_currentnumber_subtracted'] = df_EducationCurrentNumber['education_sum_currentnumber'].sub(df_EducationCurrentNumber['education_sum_propensity'])
-#
-## Prepare dataframe for bar chart.
-#df_EducationCurrentNumber = df_EducationCurrentNumber[['eduname', 'education_sum_propensity', 'education_sum_currentnumber_subtracted']]
-#df_EducationCurrentNumber['eduname'] = df_EducationCurrentNumber['eduname'].str.slice(0,14)
-#df_EducationCurrentNumber.set_index('eduname', inplace=True)
-#
-## Rename columns so that they are comprehensible in the plotted legend.
-#df_EducationCurrentNumber = df_EducationCurrentNumber.rename(columns={"education_sum_propensity": "Propensity", "education_sum_currentnumber_subtracted": "Current number"})
 
 
 
@@ -335,6 +397,54 @@ input("STOP")
 
 
 
+
+
+
+# Sum of propensity within each joint trade business type.
+df_BusinessCurrentNumber = df_Master[['businesstype', 'propensity', 'currentnumber']]
+df_BusinessCurrentNumber['sum_propensity'] = df_BusinessCurrentNumber.groupby('businesstype')['propensity'].transform('sum')
+
+# Sum of current numbers of employed students within each joint trade business type.
+df_BusinessCurrentNumber['sum_currentnumber'] = df_Master.groupby('businesstype')['currentnumber'].transform('sum')
+df_BusinessCurrentNumber = df_BusinessCurrentNumber.drop_duplicates(subset='businesstype', keep="last")
+df_BusinessCurrentNumber = df_BusinessCurrentNumber.loc[df_BusinessCurrentNumber['sum_currentnumber'] > 50.0]
+df_BusinessCurrentNumber = df_BusinessCurrentNumber.sort_values('sum_propensity', ascending=False)
+
+# Get the business type with the highest and lowest propensity in relation to currently employed students.
+df_BusinessCurrentNumber['CurrentPropensityRatio'] = df_BusinessCurrentNumber["sum_propensity"] / df_BusinessCurrentNumber["sum_propensity"]
+df_BusinessCurrentNumber = df_BusinessCurrentNumber.sort_values('sum_currentnumber', ascending=False)
+
+# Inspect dataframe
+#print(df_BusinessCurrentNumber.head(100))
+
+# Subtract the propensities from the current numbers so that the bars show the correct sums.
+df_BusinessCurrentNumber['sum_currentnumber_subtracted'] = df_BusinessCurrentNumber['sum_currentnumber'].sub(df_BusinessCurrentNumber['sum_propensity'])
+
+# Prepare dataframe for bar chart.
+df_BusinessCurrentNumber = df_BusinessCurrentNumber[['businesstype', 'sum_propensity', 'sum_currentnumber_subtracted']]
+#df_BusinessCurrentNumber['businesstype'] = df_BusinessCurrentNumber['businesstype'].str.slice(0,14)
+df_BusinessCurrentNumber.set_index('businesstype', inplace=True)
+
+# Rename columns so that they are comprehensible in the plotted legend.
+df_BusinessCurrentNumber = df_BusinessCurrentNumber.rename(columns={"sum_propensity": "Propensity", "sum_currentnumber_subtracted": "Current number"})
+
+# Bar chart
+ax = df_BusinessCurrentNumber.plot.barh(stacked=True)
+
+# Add labels
+ax.set_ylabel("", fontsize=14)
+ax.set_xlabel("Current number of employed vocational students", fontsize=18)
+
+plt.xticks(fontsize=16)
+plt.yticks(fontsize=14)
+
+plt.legend(prop={'size': 18})
+
+plt.savefig(r'C:\Users\hoged\OneDrive\Skrivebord\Speciale\Data\test.png', bbox_inches='tight')
+
+#plt.show()
+plt.clf()
+plt.close()
 
 ################################################################################################################################ Test: Heat map
 

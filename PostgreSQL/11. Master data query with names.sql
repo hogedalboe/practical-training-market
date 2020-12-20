@@ -15,7 +15,9 @@ SELECT
 	combinedapproval.currentamount / combinedapproval.approvalamount as propensity,
 	combinedapproval.nearestfacilitykm,
 	company.sectorcode,
+	sector.sectorname,
 	company.businesscode,
+	business.name as businesstype,
 	company.employees,
 	extract(year FROM company.established)::int as established,
 	education.committeecode,
@@ -55,5 +57,7 @@ SELECT
 		LEFT JOIN regiondemographics on regiondemographics.regioncode = region.regioncode
 			AND regiondemographics.yearofmeasurement = 2019
 		LEFT JOIN committee on committee.committeecode = education.committeecode
+		LEFT JOIN sector on sector.sectorcode = company.sectorcode
+		LEFT JOIN business on business.businesscode = company.businesscode
 
 WHERE combinedapproval.approvalamount <> 0   
