@@ -13,7 +13,7 @@ db = objects.Database(config.server, config.database, config.user, config.passwo
 
 # Get query for obtaining master data.
 masterQuery = ""
-with open(r'C:\Users\hoged\OneDrive\Skrivebord\Speciale\Data\PostgreSQL\10. Master data query.sql', 'r') as f:
+with open(r'C:\Users\hoged\OneDrive\Skrivebord\Speciale\Data\PostgreSQL\11. Master data query with names.sql', 'r') as f:
     masterQuery = f.read()
 
 # Get all data of relevance for the descriptive statistical analysis.
@@ -26,8 +26,8 @@ def approvalRatios():
     df_combinedapprovals = db.Read("SELECT * FROM combinedapproval")
 
     # Get the ratio between 
-    approvalRatio = df_approvals['approvalamount'].mean() / df_approvals['currentamount'].mean()
-    combinedapprovalRatio = df_combinedapprovals['approvalamount'].mean() / df_combinedapprovals['currentamount'].mean()
+    approvalRatio = df_approvals['approvalnumber'].mean() / df_approvals['currentnumber'].mean()
+    combinedapprovalRatio = df_combinedapprovals['approvalnumber'].mean() / df_combinedapprovals['currentnumber'].mean()
 
     print(str(approvalRatio))
     print(str(combinedapprovalRatio))
@@ -36,7 +36,7 @@ def approvalRatios():
 
 ################################################################################################################################ Univariate shapes of approval/employment/propensity data
 
-df_Key = df_Master[['currentamount', 'approvalamount', 'propensity']].dropna()
+df_Key = df_Master[['currentnumber', 'approvalnumber', 'propensity']].dropna()
 
 def univariate(column, x_name, countValue, continuous=True, color='blue', plot_note_fontsize=8, plot_title_fontsize=12):
     print("-------------------------------------------------------")
@@ -213,23 +213,115 @@ def univariate(column, x_name, countValue, continuous=True, color='blue', plot_n
     plt.clf()
     plt.close()
 
-#univariate('approvalamount', 'Number of vocational students a production unit is approved for', 0.0, color='cornflowerblue') # TODO: Uncomment
-#univariate('currentamount', 'Current number of employed vocational students', 0.0, color='orange')
+#univariate('approvalnumber', 'Number of vocational students a production unit is approved for', 0.0, color='cornflowerblue')
+#univariate('currentnumber', 'Current number of employed vocational students', 0.0, color='orange')
 #univariate('propensity', 'Propensity to employ vocational students', 0.0, color='green')
 
 ################################################################################################################################ Analyse dichotomous propensity observations
 
 df_Propensity = df_Master.loc[df_Master['propensity'] > 0.0]
 
-# Mean split
-propensity_mean = np.mean(df_Master['propensity'])
-print("Values less than the mean: " + str(len(df_Propensity[df_Propensity['propensity'] < propensity_mean].index)))
-print("Values equal to or higher than the mean: " + str(len(df_Propensity[df_Propensity['propensity'] >= propensity_mean].index)))
+def propensity_measures():
+    # Mean split
+    propensity_mean = np.mean(df_Master['propensity'])
+    print("Values less than the mean: " + str(len(df_Propensity[df_Propensity['propensity'] < propensity_mean].index)))
+    print("Values equal to or higher than the mean: " + str(len(df_Propensity[df_Propensity['propensity'] >= propensity_mean].index)))
 
-# Median split
-propensity_median = np.median(df_Master['propensity'])
-print("Values less than the median: " + str(len(df_Propensity[df_Propensity['propensity'] < propensity_median].index)))
-print("Values equal to or higher than the median: " + str(len(df_Propensity[df_Propensity['propensity'] >= propensity_median].index)))
+    # Median split
+    propensity_median = np.median(df_Master['propensity'])
+    print("Values less than the median: " + str(len(df_Propensity[df_Propensity['propensity'] < propensity_median].index)))
+    print("Values equal to or higher than the median: " + str(len(df_Propensity[df_Propensity['propensity'] >= propensity_median].index)))
+
+#propensity_measures()
+
+################################################################################################################################ Numbers per education
+
+# Sum of propensity within each education.
+df_EducationCurrentNumber = df_Master[['edunum', 'eduname', 'propensity', 'currentnumber']]
+df_EducationCurrentNumber['education_sum_propensity'] = df_EducationCurrentNumber.groupby('edunum')['propensity'].transform('sum')
+
+# Sum of current numbers of employed students within each education.
+df_EducationCurrentNumber['education_sum_currentnumber'] = df_Master.groupby('edunum')['currentnumber'].transform('sum')
+df_EducationCurrentNumber = df_EducationCurrentNumber.drop_duplicates(subset='eduname', keep="last")
+df_EducationCurrentNumber = df_EducationCurrentNumber.loc[df_EducationCurrentNumber['education_sum_currentnumber'] > 0.0]
+df_EducationCurrentNumber = df_EducationCurrentNumber.sort_values('education_sum_currentnumber', ascending=False)
+
+# Get the educations with the highest and lowest propensity in relation to currently employed students.
+df_EducationCurrentNumber['CurrentPropensityRatio'] = df_EducationCurrentNumber["education_sum_currentnumber"] / df_EducationCurrentNumber["education_sum_propensity"]
+#df_EducationCurrentNumber = df_EducationCurrentNumber.sort_values('CurrentPropensityRatio', ascending=False)
+
+# Inspect dataframe
+#print(df_EducationCurrentNumber.head(30))
+
+# Subtract the propensities from the current numbers so that the bars show the correct sums.
+df_EducationCurrentNumber['education_sum_currentnumber_subtracted'] = df_EducationCurrentNumber['education_sum_currentnumber'].sub(df_EducationCurrentNumber['education_sum_propensity'])
+
+# Prepare dataframe for bar chart.
+df_EducationCurrentNumber = df_EducationCurrentNumber[['eduname', 'education_sum_propensity', 'education_sum_currentnumber_subtracted']]
+df_EducationCurrentNumber['eduname'] = df_EducationCurrentNumber['eduname'].str.slice(0,14)
+df_EducationCurrentNumber.set_index('eduname', inplace=True)
+
+# Rename columns so that they are comprehensible in the plotted legend.
+df_EducationCurrentNumber = df_EducationCurrentNumber.rename(columns={"education_sum_propensity": "Propensity", "education_sum_currentnumber_subtracted": "Current number"})
+
+# Bar chart.
+ax = df_EducationCurrentNumber.plot.barh(stacked=True)
+
+# Add labels
+ax.set_ylabel("", fontsize=14)
+ax.set_xlabel("Current number of employed vocational students", fontsize=18)
+
+plt.xticks(fontsize=16)
+plt.yticks(fontsize=14)
+
+plt.legend(prop={'size': 18})
+
+#plt.show()
+
+################################################################################################################################ Numbers per education
+
+# Sum of propensity within each joint trade committee.
+df_EducationCommittee = df_Master[['committeename', 'propensity', 'currentnumber']]
+#df_EducationCommittee['committee_sum_propensity'] = df_EducationCommittee.groupby('committeename')['propensity'].transform('sum')
+
+# Sum of current numbers of employed students within each joint trade committee.
+df_EducationCommittee['committee_sum_currentnumber'] = df_Master.groupby('committeename')['currentnumber'].transform('sum')
+df_EducationCommittee = df_EducationCommittee.drop_duplicates(subset='committeename', keep="last")
+#df_EducationCommittee = df_EducationCommittee.loc[df_EducationCommittee['committee_sum_propensity'] > 0.0]
+#df_EducationCommittee = df_EducationCommittee.sort_values('committee_sum_propensity', ascending=False)
+
+# Get the committees with the highest and lowest propensity in relation to currently employed students.
+#df_EducationCommittee['CurrentPropensityRatio'] = df_EducationCommittee["committee_sum_propensity"] / df_EducationCommittee["committee_sum_propensity"]
+#df_EducationCommittee = df_EducationCommittee.sort_values('CurrentPropensityRatio', ascending=False)
+
+# Inspect dataframe
+print(df_EducationCommittee.head(10))
+
+
+
+
+input("STOP")
+
+
+
+
+## Get the educations with the highest and lowest propensity in relation to currently employed students.
+#df_EducationCurrentNumber['CurrentPropensityRatio'] = df_EducationCurrentNumber["education_sum_currentnumber"] / df_EducationCurrentNumber["education_sum_propensity"]
+##df_EducationCurrentNumber = df_EducationCurrentNumber.sort_values('CurrentPropensityRatio', ascending=False)
+#
+## Inspect dataframe
+##print(df_EducationCurrentNumber.head(30))
+#
+## Subtract the propensities from the current numbers so that the bars show the correct sums.
+#df_EducationCurrentNumber['education_sum_currentnumber_subtracted'] = df_EducationCurrentNumber['education_sum_currentnumber'].sub(df_EducationCurrentNumber['education_sum_propensity'])
+#
+## Prepare dataframe for bar chart.
+#df_EducationCurrentNumber = df_EducationCurrentNumber[['eduname', 'education_sum_propensity', 'education_sum_currentnumber_subtracted']]
+#df_EducationCurrentNumber['eduname'] = df_EducationCurrentNumber['eduname'].str.slice(0,14)
+#df_EducationCurrentNumber.set_index('eduname', inplace=True)
+#
+## Rename columns so that they are comprehensible in the plotted legend.
+#df_EducationCurrentNumber = df_EducationCurrentNumber.rename(columns={"education_sum_propensity": "Propensity", "education_sum_currentnumber_subtracted": "Current number"})
 
 
 
@@ -239,7 +331,10 @@ print("Values equal to or higher than the median: " + str(len(df_Propensity[df_P
 
 
 
-input("stop")
+
+
+
+
 
 ################################################################################################################################ Test: Heat map
 

@@ -2,6 +2,9 @@ SELECT
 	combinedapproval.pnum,
 	productionunit.cvrnum,
 	combinedapproval.edunum,
+	education.name as eduname,
+	committee.committeecode,
+	committee.name as committeename,
 	productionunit.postalcode,
 	municipality.municipalitycode,
 	region.regioncode,
@@ -51,5 +54,6 @@ SELECT
 		LEFT JOIN region on region.regioncode = municipality.regioncode
 		LEFT JOIN regiondemographics on regiondemographics.regioncode = region.regioncode
 			AND regiondemographics.yearofmeasurement = 2019
+		LEFT JOIN committee on committee.committeecode = education.committeecode
 
 WHERE combinedapproval.approvalamount <> 0   
