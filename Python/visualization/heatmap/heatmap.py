@@ -21,28 +21,34 @@ dict_ColorScales = {
     #       https://betterfigures.org/2015/06/23/picking-a-colour-scale-for-scientific-graphics/
     #       https://colorbrewer2.org/#type=sequential&scheme=YlGnBu&n=6
 
-    # Custom:
+    # Test:
     'blue':{10:'aqua', 15:'deepskyblue', 20:'mediumslateblue', 25:'mediumblue', 30:'midnightblue', 35:'black'},
     'red':{10:'gainsboro', 15:'rosybrown', 20:'indianred', 25:'firebrick', 30:'darkred', 35:'black'},
     'gray':{10:'snow', 15:'darkgray', 20:'slategray', 25:'dimgray', 30:'darkslategray', 35:'black'},
     'sunset':{10:'lightyellow', 15:'khaki', 20:'gold', 25:'goldenrod', 30:'orangered', 35:'darkred'},
     'purple':{10:'#dadaebFF', 15:'#bcbddcF0', 20:'#9e9ac8F0', 25:'#807dbaF0', 30:'#6a51a3F0', 35:'#54278fF0'},
     'YlGnBu':{10:'#c7e9b4', 15:'#7fcdbb', 20:'#41b6c4', 25:'#1d91c0', 30:'#225ea8', 35:'#253494'},
-    
-    # Red/purple:
-    'colorbrewer_PuRd':{1:'#f1eef6', 2: '#d4b9da', 3: '#c994c7', 4: '#df65b0', 5: '#dd1c77', 6: '#980043'},
-    'colorbrewer_RdPu':{1:'#feebe2', 2: '#fcc5c0', 3: '#fa9fb5', 4: '#f768a1', 5: '#c51b8a', 6: '#7a0177'},
-    'colorbrewer_Purples':{1:'#f2f0f7', 2: '#dadaeb', 3: '#bcbddc', 4: '#9e9ac8', 5: '#756bb1', 6: '#54278f'},
 
+    # Custom:
+    'currentnumber':{0: '#5F021F', 1:'#ffffcc', 10: '#c7e9b4', 20: '#7fcdbb', 30: '#41b6c4', 40: '#2c7fb8', 50: '#253494'},
+    'propensity':{0.0:'#5F021F', 0.1: '#d0d1e6', 0.2: '#a6bddb', 0.3: '#67a9cf', 0.4: '#1c9099', 0.5: '#016c59'},
+    'currentnumberUnadjusted':{0:'#ffffcc', 100: '#c7e9b4', 200: '#7fcdbb', 300: '#41b6c4', 400: '#2c7fb8', 500: '#253494'},
+    
     # Yellow/green/blue:
-    'colorbrewer_YlGnBu':{1:'#ffffcc', 2: '#c7e9b4', 3: '#7fcdbb', 4: '#41b6c4', 5: '#2c7fb8', 6: '#253494'},
+    #'colorbrewer_YlGnBu':{1:'#ffffcc', 2: '#c7e9b4', 3: '#7fcdbb', 4: '#41b6c4', 5: '#2c7fb8', 6: '#253494'},
     'colorbrewer_GnBu':{1:'#f0f9e8', 2: '#ccebc5', 3: '#a8ddb5', 4: '#7bccc4', 5: '#43a2ca', 6: '#0868ac'},
-    'colorbrewer_PuBuGn':{1:'#f6eff7', 2: '#d0d1e6', 3: '#a6bddb', 4: '#67a9cf', 5: '#1c9099', 6: '#016c59'},
+    #'colorbrewer_PuBuGn':{1:'#f6eff7', 2: '#d0d1e6', 3: '#a6bddb', 4: '#67a9cf', 5: '#1c9099', 6: '#016c59'},
 
     # Yellow/orange/brown/red:
     'colorbrewer_YlOrBr':{1:'#ffffd4', 2: '#fee391', 3: '#fec44f', 4: '#fe9929', 5: '#d95f0e', 6: '#993404'},
     'colorbrewer_YlOrRd':{1:'#ffffb2', 2: '#fed976', 3: '#feb24c', 4: '#fd8d3c', 5: '#f03b20', 6: '#bd0026'},
     'colorbrewer_Oranges':{1:'#feedde', 2: '#fdd0a2', 3: '#fdae6b', 4: '#fd8d3c', 5: '#e6550d', 6: '#a63603'},
+
+    # Red/purple:
+    'colorbrewer_PuRd':{1:'#f1eef6', 2: '#d4b9da', 3: '#c994c7', 4: '#df65b0', 5: '#dd1c77', 6: '#980043'},
+    'colorbrewer_RdPu':{1:'#feebe2', 2: '#fcc5c0', 3: '#fa9fb5', 4: '#f768a1', 5: '#c51b8a', 6: '#7a0177'},
+    'colorbrewer_Purples':{1:'#f2f0f7', 2: '#dadaeb', 3: '#bcbddc', 4: '#9e9ac8', 5: '#756bb1', 6: '#54278f'},
+
 
     # Reds
     'colorbrewer_Reds':{1:'#fee5d9', 2: '#fcbba1', 3: '#fc9272', 4: '#fb6a4a', 5: '#de2d26', 6: '#a50f15'},
@@ -79,7 +85,7 @@ class GeographicalVisualizer:
         self.df_Shapes = self.sf_to_df(self.sf)
 
         print("\nColumns in shape data: \n" + str(self.df_Shapes.columns.values.tolist()))
-        print("\nShape dataframe: \n" + str(self.df_Shapes[['REGIONKODE', 'REGIONNAVN', 'KOMKODE', 'KOMNAVN', 'coords']].head(99)))
+        print("\nShape dataframe: \n" + str(self.df_Shapes[['REGIONKODE', 'REGIONNAVN', 'KOMKODE', 'KOMNAVN', 'coords']].head(3)))
     
     def sf_to_df(self, sf):
         fields = [x[0] for x in sf.fields][1:]
@@ -99,7 +105,7 @@ class GeographicalVisualizer:
         scaleTextBefore='', 
         scaleTextAfter='',
         scaleTextAdjustLeft=25000,
-        scaleValueTextSize=25,
+        scaleValueTextSize=30,
          x_lim=None, y_lim=None):
 
         plt.clf()

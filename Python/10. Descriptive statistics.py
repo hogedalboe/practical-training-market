@@ -441,100 +441,224 @@ def business():
 
 ################################################################################################################################ Average employment numbers for the three largest business types
 
-df_BusinessCurrentNumber = df_Master[['businesstype', 'currentnumber']]
+def averageEmployment():
+    df_BusinessCurrentNumber = df_Master[['businesstype', 'currentnumber']]
 
-# Get individual business types in individual data frames.
-df_Aktieselskab = df_BusinessCurrentNumber.loc[df_BusinessCurrentNumber['businesstype'] == 'Aktieselskab']
-df_Anpartsselskab = df_BusinessCurrentNumber.loc[df_BusinessCurrentNumber['businesstype'] == 'Anpartsselskab']
-df_Enkeltmandsvirksomhed = df_BusinessCurrentNumber.loc[df_BusinessCurrentNumber['businesstype'] == 'Enkeltmandsvirksomhed']
+    # Get individual business types in individual data frames.
+    df_Aktieselskab = df_BusinessCurrentNumber.loc[df_BusinessCurrentNumber['businesstype'] == 'Aktieselskab']
+    df_Anpartsselskab = df_BusinessCurrentNumber.loc[df_BusinessCurrentNumber['businesstype'] == 'Anpartsselskab']
+    df_Enkeltmandsvirksomhed = df_BusinessCurrentNumber.loc[df_BusinessCurrentNumber['businesstype'] == 'Enkeltmandsvirksomhed']
 
-#### Getting means and standard errors (INCLUDING companies without employed students).
-mean_aktieselskab = df_Aktieselskab["currentnumber"].mean()
-mean_anpartsselskab = df_Anpartsselskab["currentnumber"].mean()
-mean_enkeltmandsvirksomhed = df_Enkeltmandsvirksomhed["currentnumber"].mean()
+    #### Getting means and standard errors (INCLUDING companies without employed students).
+    mean_aktieselskab = df_Aktieselskab["currentnumber"].mean()
+    mean_anpartsselskab = df_Anpartsselskab["currentnumber"].mean()
+    mean_enkeltmandsvirksomhed = df_Enkeltmandsvirksomhed["currentnumber"].mean()
 
-print('Mean for aktieselskab (INCLUDING companies without employed students): ' + str(mean_aktieselskab))
-print('Mean for anpartsselskab (INCLUDING companies without employed students): ' + str(mean_anpartsselskab))
-print('Mean for enkeltmandsvirksomhed (INCLUDING companies without employed students): ' + str(mean_enkeltmandsvirksomhed))
+    print('Mean for aktieselskab (INCLUDING companies without employed students): ' + str(mean_aktieselskab))
+    print('Mean for anpartsselskab (INCLUDING companies without employed students): ' + str(mean_anpartsselskab))
+    print('Mean for enkeltmandsvirksomhed (INCLUDING companies without employed students): ' + str(mean_enkeltmandsvirksomhed))
 
-# Getting standard deviations 
-std_aktieselskab = df_Aktieselskab["currentnumber"].std()
-std_anpartsselskab = df_Anpartsselskab["currentnumber"].std()
-std_enkeltmandsvirksomhed = df_Enkeltmandsvirksomhed["currentnumber"].std()
+    # Getting standard deviations 
+    std_aktieselskab = df_Aktieselskab["currentnumber"].std()
+    std_anpartsselskab = df_Anpartsselskab["currentnumber"].std()
+    std_enkeltmandsvirksomhed = df_Enkeltmandsvirksomhed["currentnumber"].std()
 
-print('Standard deviation for aktieselskab (INCLUDING companies without employed students): ' + str(std_aktieselskab))
-print('Standard deviation for anpartsselskab (INCLUDING companies without employed students): ' + str(std_anpartsselskab))
-print('Standard deviation for enkeltmandsvirksomhed (INCLUDING companies without employed students): ' + str(std_enkeltmandsvirksomhed))
+    print('Standard deviation for aktieselskab (INCLUDING companies without employed students): ' + str(std_aktieselskab))
+    print('Standard deviation for anpartsselskab (INCLUDING companies without employed students): ' + str(std_anpartsselskab))
+    print('Standard deviation for enkeltmandsvirksomhed (INCLUDING companies without employed students): ' + str(std_enkeltmandsvirksomhed))
 
-#### Excluding production units with currently no employed vocational students.
-mean_aktieselskab_ExcludingZero = df_Aktieselskab.loc[df_Aktieselskab['currentnumber'] > 0.0]["currentnumber"].mean()
-mean_anpartsselskab_ExcludingZero = df_Anpartsselskab.loc[df_Anpartsselskab['currentnumber'] > 0.0]["currentnumber"].mean()
-mean_enkeltmandsvirksomhed_ExcludingZero = df_Enkeltmandsvirksomhed.loc[df_Enkeltmandsvirksomhed['currentnumber'] > 0.0]["currentnumber"].mean()
+    #### Excluding production units with currently no employed vocational students.
+    df_Aktieselskab_ExcludingZero = df_Aktieselskab.loc[df_Aktieselskab['currentnumber'] > 0.0]["currentnumber"]
+    df_Anpartsselskab_ExcludingZero = df_Anpartsselskab.loc[df_Anpartsselskab['currentnumber'] > 0.0]["currentnumber"]
+    df_Enkeltmandsvirksomhed_ExcludingZero = df_Enkeltmandsvirksomhed.loc[df_Enkeltmandsvirksomhed['currentnumber'] > 0.0]["currentnumber"]
 
-print('Mean for aktieselskab (EXCLUDING companies without employed students): ' + str(mean_aktieselskab_ExcludingZero))
-print('Mean for anpartsselskab (EXCLUDING companies without employed students): ' + str(mean_anpartsselskab_ExcludingZero))
-print('Mean for enkeltmandsvirksomhed (EXCLUDING companies without employed students): ' + str(mean_enkeltmandsvirksomhed_ExcludingZero))
+    # Means.
+    mean_aktieselskab_ExcludingZero = df_Aktieselskab_ExcludingZero.mean()
+    mean_anpartsselskab_ExcludingZero = df_Anpartsselskab_ExcludingZero.mean()
+    mean_enkeltmandsvirksomhed_ExcludingZero = df_Enkeltmandsvirksomhed_ExcludingZero.mean()
 
-# Getting standard deviations 
-std_aktieselskab_ExcludingZero = df_Aktieselskab.loc[df_Aktieselskab['currentnumber'] > 0.0]["currentnumber"].std()
-std_anpartsselskab_ExcludingZero = df_Anpartsselskab.loc[df_Anpartsselskab['currentnumber'] > 0.0]["currentnumber"].std()
-std_enkeltmandsvirksomhed_ExcludingZero = df_Enkeltmandsvirksomhed.loc[df_Enkeltmandsvirksomhed['currentnumber'] > 0.0]["currentnumber"].std()
+    print('Mean for aktieselskab (EXCLUDING companies without employed students): {0} (n={1})'.format(str(mean_aktieselskab_ExcludingZero), len(df_Aktieselskab_ExcludingZero.index)))
+    print('Mean for anpartsselskab (EXCLUDING companies without employed students): {0} (n={1})'.format(str(mean_anpartsselskab_ExcludingZero), len(df_Anpartsselskab_ExcludingZero.index)))
+    print('Mean for enkeltmandsvirksomhed (EXCLUDING companies without employed students): {0} (n={1})'.format(str(mean_enkeltmandsvirksomhed_ExcludingZero), len(df_Enkeltmandsvirksomhed_ExcludingZero.index)))
 
-print('Standard deviation for aktieselskab (EXCLUDING companies without employed students): ' + str(std_aktieselskab_ExcludingZero))
-print('Standard deviation for anpartsselskab (EXCLUDING companies without employed students): ' + str(std_anpartsselskab_ExcludingZero))
-print('Standard deviation for enkeltmandsvirksomhed (EXCLUDING companies without employed students): ' + str(std_enkeltmandsvirksomhed_ExcludingZero))
+    # Getting standard deviations 
+    std_aktieselskab_ExcludingZero = df_Aktieselskab.loc[df_Aktieselskab['currentnumber'] > 0.0]["currentnumber"].std()
+    std_anpartsselskab_ExcludingZero = df_Anpartsselskab.loc[df_Anpartsselskab['currentnumber'] > 0.0]["currentnumber"].std()
+    std_enkeltmandsvirksomhed_ExcludingZero = df_Enkeltmandsvirksomhed.loc[df_Enkeltmandsvirksomhed['currentnumber'] > 0.0]["currentnumber"].std()
 
-# Plot bar chart.
-exMeans = (float(mean_aktieselskab_ExcludingZero-mean_aktieselskab), float(mean_anpartsselskab_ExcludingZero-mean_anpartsselskab), float(mean_enkeltmandsvirksomhed_ExcludingZero-mean_enkeltmandsvirksomhed))
-exStd = (float(std_aktieselskab_ExcludingZero), float(std_anpartsselskab_ExcludingZero), float(std_enkeltmandsvirksomhed_ExcludingZero))
+    print('Standard deviation for aktieselskab (EXCLUDING companies without employed students): ' + str(std_aktieselskab_ExcludingZero))
+    print('Standard deviation for anpartsselskab (EXCLUDING companies without employed students): ' + str(std_anpartsselskab_ExcludingZero))
+    print('Standard deviation for enkeltmandsvirksomhed (EXCLUDING companies without employed students): ' + str(std_enkeltmandsvirksomhed_ExcludingZero))
 
-inMeans = (float(mean_aktieselskab), float(mean_anpartsselskab), float(mean_enkeltmandsvirksomhed))
-inStd = (float(std_aktieselskab), float(std_anpartsselskab), float(std_enkeltmandsvirksomhed))
+    # Plot bar chart.
+    exMeans = (float(mean_aktieselskab_ExcludingZero-mean_aktieselskab), float(mean_anpartsselskab_ExcludingZero-mean_anpartsselskab), float(mean_enkeltmandsvirksomhed_ExcludingZero-mean_enkeltmandsvirksomhed))
+    exStd = (float(std_aktieselskab_ExcludingZero), float(std_anpartsselskab_ExcludingZero), float(std_enkeltmandsvirksomhed_ExcludingZero))
 
-ind = np.arange(3) # Number of groups.
-width = 0.35 # Bar width.
+    inMeans = (float(mean_aktieselskab), float(mean_anpartsselskab), float(mean_enkeltmandsvirksomhed))
+    inStd = (float(std_aktieselskab), float(std_anpartsselskab), float(std_enkeltmandsvirksomhed))
 
-p1 = plt.bar(ind, exMeans, width, bottom=inMeans)
-p2 = plt.bar(ind, inMeans, width)
+    ind = np.arange(3) # Number of groups.
+    width = 0.35 # Bar width.
 
-plt.ylabel('Average number of employed students', fontsize=16)
-plt.xticks(ind, ('Aktieselskab', 'Anpartsselskab', 'Enkeltmandsvirksomhed'), fontsize=16)
-plt.yticks(fontsize=16)
-plt.legend((p1[0], p2[0]), ('Excluding non-employers', 'Including non-employers'), prop={'size': 16})
+    p1 = plt.bar(ind, exMeans, width, bottom=inMeans, color='red')
+    p2 = plt.bar(ind, inMeans, width, color='gray')
 
-plt.show()
+    plt.ylabel('Average number of employed students', fontsize=18)
+    plt.xticks(ind, ('Aktieselskab', 'Anpartsselskab', 'Enkeltmandsvirksomhed'), fontsize=16)
+    plt.yticks(fontsize=16)
+    plt.legend((p1[0], p2[0]), ('Excluding non-employers', 'Including non-employers'), prop={'size': 16})
 
-################################################################################################################################ Test: Heat map
+    plt.show()
 
-input('STOP')
+#averageEmployment()
 
-# Get demographical data.
-df_MunicipalityCommute = db.Read("SELECT municipalitycode, avgcommutekm FROM municipalitydemographics WHERE yearofmeasurement = 2018")
+################################################################################################################################ Heat map of geographical distribution of employment
 
-# Determine 'heat' of municipality.
-dict_HeatMap = {}
-for i, row in df_MunicipalityCommute.iterrows():
-    for key, color in hm.dict_ColorScales['blue'].items():
-        if row['avgcommutekm'] > key:
-            dict_HeatMap['0'+str(int(row['municipalitycode']))] = color
+def heatMapCurrentNumberAdjusted():
 
-hm.GeographicalVisualizer(dict_SubnationalColor=dict_HeatMap, 
-    path_Shapefile='KOMMUNE.shp', 
-    sf_SubnationalColumn='KOMKODE', 
-    dict_ColorScale=hm.dict_ColorScales['blue']).plot_map('test.png', 
-        scaleTextBefore='> ', 
-        scaleTextAfter=' km', 
-        scaleTextAdjustLeft=25000
-    )
+    df_Geography = df_Master[['municipalitycode', 'municipalityname', 'regioncode', 'currentnumber', 'approvalnumber', 'regionpopulation', 'municipalitypopulation']]
+
+    # Sum values by municipality.
+    df_GeographyMunicipality = df_Geography.groupby(['municipalitycode'], as_index=False)[['currentnumber', 'approvalnumber']].sum()
+    df_GeographyMunicipality = df_Geography[['municipalitycode', 'municipalitypopulation']].merge(df_GeographyMunicipality, how='left', left_on='municipalitycode', right_on='municipalitycode')
+    df_GeographyMunicipality = df_GeographyMunicipality.drop_duplicates()
+
+    # Values per x municipal inhabitants.
+    df_GeographyMunicipality['currentnumber_per_x_municipal_inhabitants'] = (df_GeographyMunicipality['currentnumber'] / df_GeographyMunicipality['municipalitypopulation'])*10000
+
+    # Merge with the remaining municipalities in the database (not represented in the approval data).
+    df_GeographyMunicipality = db.Read("""SELECT municipality.municipalitycode, 
+        municipalitydemographics.population as municipalitypopulation, 
+        municipality.name as municipalityname
+            FROM municipality 
+                JOIN municipalitydemographics 
+                    ON municipalitydemographics.municipalitycode = municipality.municipalitycode""").merge(df_GeographyMunicipality, how='left', left_on='municipalitycode', right_on='municipalitycode')
+
+    # Clean up the merged dataframe.
+    df_GeographyMunicipality = df_GeographyMunicipality.fillna(0)
+    df_GeographyMunicipality = df_GeographyMunicipality.drop('municipalitypopulation_y', 1)
+
+    print(df_GeographyMunicipality.sort_values('currentnumber_per_x_municipal_inhabitants', ascending=True).head(100))
+
+    print("Average municipal population size: " + str(float(db.Read('SELECT AVG(population) FROM municipalitydemographics WHERE yearofmeasurement = 2018')['avg'][0])))
+
+    # Heat map: Color scale.
+    colorScale = hm.dict_ColorScales['currentnumber']
+
+    # Heat map: Determine 'heat' of municipality.
+    dict_HeatMap = {}
+    for i, row in df_GeographyMunicipality.iterrows():
+        for key, color in colorScale.items():
+            if row['currentnumber_per_x_municipal_inhabitants'] >= key:
+                dict_HeatMap['0'+str(int(row['municipalitycode']))] = color
+
+    # Create heat map.
+    hm.GeographicalVisualizer(dict_SubnationalColor=dict_HeatMap, 
+        path_Shapefile='KOMMUNE.shp', 
+        sf_SubnationalColumn='KOMKODE', 
+        dict_ColorScale=colorScale).plot_map('Current number of students per 10000 municipal inhabitants.png', 
+            scaleTextBefore='>= ', 
+            scaleTextAfter='', 
+            scaleTextAdjustLeft=25000
+        )
+
+#heatMapCurrentNumberAdjusted()
+
+def heatMapCurrentNumberUnadjusted():
+
+    df_Geography = df_Master[['municipalitycode', 'municipalityname', 'currentnumber']]
+
+    # Sum values by municipality.
+    df_GeographyMunicipality = df_Geography.groupby(['municipalitycode'], as_index=False)[['currentnumber']].sum()
+    df_GeographyMunicipality = df_Geography[['municipalitycode']].merge(df_GeographyMunicipality, how='left', left_on='municipalitycode', right_on='municipalitycode')
+    df_GeographyMunicipality = df_GeographyMunicipality.drop_duplicates()
+
+    # Merge with the remaining municipalities in the database (not represented in the approval data).
+    df_GeographyMunicipality = db.Read("""SELECT municipality.municipalitycode, 
+        municipality.name as municipalityname
+            FROM municipality 
+                JOIN municipalitydemographics 
+                    ON municipalitydemographics.municipalitycode = municipality.municipalitycode""").merge(df_GeographyMunicipality, how='left', left_on='municipalitycode', right_on='municipalitycode')
+
+    # Clean up the merged dataframe.
+    df_GeographyMunicipality = df_GeographyMunicipality.fillna(0)
+
+    print(df_GeographyMunicipality.sort_values('currentnumber', ascending=True).head(100))
+
+    # Heat map: Color scale.
+    colorScale = hm.dict_ColorScales['currentnumberUnadjusted']
+
+    # Heat map: Determine 'heat' of municipality.
+    dict_HeatMap = {}
+    for i, row in df_GeographyMunicipality.iterrows():
+        for key, color in colorScale.items():
+            if row['currentnumber'] >= key:
+                dict_HeatMap['0'+str(int(row['municipalitycode']))] = color
+
+    # Create heat map.
+    hm.GeographicalVisualizer(dict_SubnationalColor=dict_HeatMap, 
+        path_Shapefile='KOMMUNE.shp', 
+        sf_SubnationalColumn='KOMKODE', 
+        dict_ColorScale=colorScale).plot_map('Current number of students per municipality (unadjusted).png', 
+            scaleTextBefore='>= ', 
+            scaleTextAfter='', 
+            scaleTextAdjustLeft=25000
+        )
+
+heatMapCurrentNumberUnadjusted()
+
+################################################################################################################################ Heat map of geographical spread of propensity
+
+def heatMapPropensity():
+
+    df_Geography = df_Master[['municipalitycode', 'municipalityname', 'regioncode', 'currentnumber', 'approvalnumber', 'regionpopulation', 'municipalitypopulation']]
+
+    # Sum values by municipality.
+    df_GeographyMunicipality = df_Geography.groupby(['municipalitycode'], as_index=False)[['currentnumber', 'approvalnumber']].sum()
+    df_GeographyMunicipality = df_Geography[['municipalitycode', 'municipalitypopulation']].merge(df_GeographyMunicipality, how='left', left_on='municipalitycode', right_on='municipalitycode')
+    df_GeographyMunicipality = df_GeographyMunicipality.drop_duplicates()
+
+    # Municipal propensity: The ratio of municipalities accumulated approval numbers and accumulated numbers of currently employed vocational students.
+    df_GeographyMunicipality['accumulated_propensity'] = df_GeographyMunicipality['currentnumber'] / df_GeographyMunicipality['approvalnumber']
 
 
+    # Merge with the remaining municipalities in the database (not represented in the approval data).
+    df_GeographyMunicipality = db.Read("""SELECT municipality.municipalitycode, 
+        municipalitydemographics.population as municipalitypopulation, 
+        municipality.name as municipalityname
+            FROM municipality 
+                JOIN municipalitydemographics 
+                    ON municipalitydemographics.municipalitycode = municipality.municipalitycode""").merge(df_GeographyMunicipality, how='left', left_on='municipalitycode', right_on='municipalitycode')
 
+    # Clean up the merged dataframe.
+    df_GeographyMunicipality = df_GeographyMunicipality.fillna(0)
+    df_GeographyMunicipality = df_GeographyMunicipality.drop('municipalitypopulation_y', 1)
 
+    print(df_GeographyMunicipality.sort_values('accumulated_propensity', ascending=True).head(100))
 
+    print("Average municipal population size: " + str(float(db.Read('SELECT AVG(population) FROM municipalitydemographics WHERE yearofmeasurement = 2018')['avg'][0])))
 
+    # Heat map: Color scale.
+    colorScale = hm.dict_ColorScales['propensity']
 
+    # Heat map: Determine 'heat' of municipality.
+    dict_HeatMap = {}
+    for i, row in df_GeographyMunicipality.iterrows():
+        for key, color in colorScale.items():
+            if row['accumulated_propensity'] >= key:
+                dict_HeatMap['0'+str(int(row['municipalitycode']))] = color
 
+    # Create heat map.
+    hm.GeographicalVisualizer(dict_SubnationalColor=dict_HeatMap, 
+        path_Shapefile='KOMMUNE.shp', 
+        sf_SubnationalColumn='KOMKODE', 
+        dict_ColorScale=colorScale).plot_map('Municipal propensity to utilize approvals.png', 
+            scaleTextBefore='>= ', 
+            scaleTextAfter='', 
+            scaleTextAdjustLeft=25000
+        )
 
+#heatMapPropensity()
 
 ################################################################################################################################ Disconnect database
 
