@@ -33,6 +33,8 @@ dict_ColorScales = {
     'currentnumber':{0: '#5F021F', 1:'#ffffcc', 10: '#c7e9b4', 20: '#7fcdbb', 30: '#41b6c4', 40: '#2c7fb8', 50: '#253494'},
     'propensity':{0.0:'#5F021F', 0.1: '#d0d1e6', 0.2: '#a6bddb', 0.3: '#67a9cf', 0.4: '#1c9099', 0.5: '#016c59'},
     'currentnumberUnadjusted':{0:'#ffffcc', 100: '#c7e9b4', 200: '#7fcdbb', 300: '#41b6c4', 400: '#2c7fb8', 500: '#253494'},
+    'commuting':{10:'#f7f7f7', 15: '#d9d9d9', 20: '#bdbdbd', 25: '#969696', 30: '#636363', 35: '#252525'},
+
     
     # Yellow/green/blue:
     #'colorbrewer_YlGnBu':{1:'#ffffcc', 2: '#c7e9b4', 3: '#7fcdbb', 4: '#41b6c4', 5: '#2c7fb8', 6: '#253494'},
@@ -54,7 +56,7 @@ dict_ColorScales = {
     'colorbrewer_Reds':{1:'#fee5d9', 2: '#fcbba1', 3: '#fc9272', 4: '#fb6a4a', 5: '#de2d26', 6: '#a50f15'},
 
     # Greys
-    'colorbrewer_Greys':{1:'#f7f7f7', 2: '#d9d9d9', 3: '#bdbdbd', 4: '#969696', 5: '#636363', 6: '#252525'}
+    #'colorbrewer_Greys':{1:'#f7f7f7', 2: '#d9d9d9', 3: '#bdbdbd', 4: '#969696', 5: '#636363', 6: '#252525'}
 }
 
 

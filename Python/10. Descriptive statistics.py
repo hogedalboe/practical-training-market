@@ -512,7 +512,7 @@ def averageEmployment():
 
 #averageEmployment()
 
-################################################################################################################################ Heat map of geographical distribution of employment
+################################################################################################################################ Heat map of municipal distribution of employment
 
 def heatMapCurrentNumberAdjusted():
 
@@ -605,9 +605,9 @@ def heatMapCurrentNumberUnadjusted():
             scaleTextAdjustLeft=25000
         )
 
-heatMapCurrentNumberUnadjusted()
+#heatMapCurrentNumberUnadjusted()
 
-################################################################################################################################ Heat map of geographical spread of propensity
+################################################################################################################################ Heat map of municipal distribution of propensity
 
 def heatMapPropensity():
 
@@ -620,7 +620,6 @@ def heatMapPropensity():
 
     # Municipal propensity: The ratio of municipalities accumulated approval numbers and accumulated numbers of currently employed vocational students.
     df_GeographyMunicipality['accumulated_propensity'] = df_GeographyMunicipality['currentnumber'] / df_GeographyMunicipality['approvalnumber']
-
 
     # Merge with the remaining municipalities in the database (not represented in the approval data).
     df_GeographyMunicipality = db.Read("""SELECT municipality.municipalitycode, 
@@ -659,6 +658,116 @@ def heatMapPropensity():
         )
 
 #heatMapPropensity()
+
+################################################################################################################################ Regional propensity and adjusted number of currently employed students
+
+def RegionCurrentNumberAdjusted():
+
+    df_Geography = df_Master[['regioncode', 'regionname', 'currentnumber', 'approvalnumber', 'regionpopulation']]
+
+    # Sum values by region.
+    df_GeographyRegion = df_Geography.groupby(['regioncode'], as_index=False)[['currentnumber', 'approvalnumber', 'regionname']].sum()
+    df_GeographyRegion = df_Geography[['regioncode', 'regionpopulation', 'regionname']].merge(df_GeographyRegion, how='left', left_on='regioncode', right_on='regioncode')
+    df_GeographyRegion = df_GeographyRegion.drop_duplicates()
+
+    # Values per x regional inhabitants.
+    df_GeographyRegion['Current number (adjusted)'] = (df_GeographyRegion['currentnumber'] / df_GeographyRegion['regionpopulation'])*500000
+
+    # Calculate regional propensities.
+    df_GeographyRegion['propensity'] = df_GeographyRegion['currentnumber'] / df_GeographyRegion['approvalnumber']
+
+    # Calculate means and standard deviations of the current numbers within the regions.
+    df_MeanStd = df_Geography[['regioncode', 'regionname', 'currentnumber']].groupby('regioncode', as_index=False).agg([np.mean, np.std])
+    df_GeographyRegion = df_MeanStd.merge(df_GeographyRegion, how='left', left_on='regioncode', right_on='regioncode')
+
+    df_GeographyRegion = df_GeographyRegion.sort_values('Current number (adjusted)', ascending=True)
+
+    # Inspect dataframe.
+    print(df_GeographyRegion.sort_values('Current number (adjusted)', ascending=True).head(7))
+
+    # Bar chart.
+    ax = df_GeographyRegion[['regionname', 'Current number (adjusted)']].plot.barh(color='green', legend=False, alpha=0.5)
+    ax.set_yticklabels(df_GeographyRegion['regionname'])
+    ax.set_xlabel("Number of employed students per 500K inhabitants", fontsize=14)
+    plt.xticks(fontsize=14)
+    plt.yticks(fontsize=16, rotation=45)
+
+    plt.savefig(r'C:\Users\hoged\OneDrive\Skrivebord\test.png', bbox_inches='tight')
+
+    #plt.show()
+    plt.clf()
+    plt.close()
+
+#RegionCurrentNumberAdjusted()
+
+################################################################################################################################ Commuting per municipality
+
+def heatmapCommuting():
+    # Get commuting figures in km from the database.
+    df_Commuting = db.Read("SELECT municipalitycode, avgcommutekm FROM municipalitydemographics WHERE yearofmeasurement = 2018")
+
+    # Heat map: Color scale.
+    colorScale = hm.dict_ColorScales['commuting']
+
+    # Heat map: Determine 'heat' of municipality.
+    dict_HeatMap = {}
+    for i, row in df_Commuting.iterrows():
+        for key, color in colorScale.items():
+            if row['avgcommutekm'] >= key:
+                dict_HeatMap['0'+str(int(row['municipalitycode']))] = color
+
+    # Create heat map.
+    hm.GeographicalVisualizer(dict_SubnationalColor=dict_HeatMap, 
+        path_Shapefile='KOMMUNE.shp', 
+        sf_SubnationalColumn='KOMKODE', 
+        dict_ColorScale=colorScale).plot_map('Average commuting distance in kilometres per municipality.png', 
+            scaleTextBefore='> ', 
+            scaleTextAfter=' km', 
+            scaleTextAdjustLeft=25000
+        )
+
+#heatmapCommuting()
+
+################################################################################################################################ Scatterplot: Commuting and student numbers per municipality
+
+df_Commuting = db.Read("SELECT municipalitycode, avgcommutekm, population FROM municipalitydemographics")
+df_MunicipalNumbers = df_Master[['municipalitycode', 'currentnumber', 'approvalnumber']]
+
+# Sum values by municipalities and merge with commuting data.
+df_MunicipalNumbers = df_MunicipalNumbers.groupby(['municipalitycode'], as_index=False)[['currentnumber', 'approvalnumber']].sum()
+df_MunicipalNumbers = df_Commuting.merge(df_MunicipalNumbers, how='left', left_on='municipalitycode', right_on='municipalitycode')
+
+# Municipal propensity: The ratio of municipalities accumulated approval numbers and accumulated numbers of currently employed vocational students.
+df_MunicipalNumbers['propensity'] = df_MunicipalNumbers['currentnumber'] / df_MunicipalNumbers['approvalnumber']
+
+# Adjust current number for municipal population size.
+df_MunicipalNumbers['Current number (adjusted)'] = (df_MunicipalNumbers['currentnumber'] / df_MunicipalNumbers['population'])*10000
+
+# Remove observations with zero values.
+df_MunicipalNumbers = df_MunicipalNumbers[df_MunicipalNumbers['Current number (adjusted)'] > 0.0]
+df_MunicipalNumbers = df_MunicipalNumbers.fillna(0)
+
+print(df_MunicipalNumbers.sort_values('Current number (adjusted)', ascending=True).head(100))
+
+# Regression.
+x = df_MunicipalNumbers['avgcommutekm']
+y = df_MunicipalNumbers['Current number (adjusted)']
+slope, intercept, rvalue, pvalue, stderr = scipy.stats.linregress(x, y)
+regressionLabel = f'Regression line: y={intercept:.2f}+{slope:.2f}x, r={rvalue:.2f}, p={pvalue:.2f}'
+
+# Scatter plot with regression line.
+fig, ax = plt.subplots()
+
+ax.plot(x, y, linewidth=0, marker='s', label='Data points')
+ax.plot(x, intercept + slope * x, label=regressionLabel)
+
+ax.set_xlabel('x')
+ax.set_ylabel('y')
+ax.legend(facecolor='white')
+
+plt.show()
+plt.clf()
+plt.close()
 
 ################################################################################################################################ Disconnect database
 
