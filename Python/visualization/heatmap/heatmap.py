@@ -34,6 +34,9 @@ dict_ColorScales = {
     'propensity':{0.0:'#5F021F', 0.1: '#d0d1e6', 0.2: '#a6bddb', 0.3: '#67a9cf', 0.4: '#1c9099', 0.5: '#016c59'},
     'currentnumberUnadjusted':{0:'#ffffcc', 100: '#c7e9b4', 200: '#7fcdbb', 300: '#41b6c4', 400: '#2c7fb8', 500: '#253494'},
     'commuting':{10:'#f7f7f7', 15: '#d9d9d9', 20: '#bdbdbd', 25: '#969696', 30: '#636363', 35: '#252525'},
+    'distance':{10:'#ffffb2', 20: '#fed976', 30: '#feb24c', 40: '#fd8d3c', 50: '#f03b20', 60: '#bd0026', 70: '#5F021F'},
+    'employmentrate':{60:'#f2f0f7', 64: '#dadaeb', 68: '#bcbddc', 72: '#9e9ac8', 76: '#756bb1', 80: '#54278f'},
+    'yearlydisposableincome':{189000:'#fee5d9', 210000: '#fcbba1', 225000: '#fc9272', 240000: '#fb6a4a', 255000: '#de2d26', 270000: '#a50f15'},
 
     
     # Yellow/green/blue:
@@ -43,7 +46,7 @@ dict_ColorScales = {
 
     # Yellow/orange/brown/red:
     'colorbrewer_YlOrBr':{1:'#ffffd4', 2: '#fee391', 3: '#fec44f', 4: '#fe9929', 5: '#d95f0e', 6: '#993404'},
-    'colorbrewer_YlOrRd':{1:'#ffffb2', 2: '#fed976', 3: '#feb24c', 4: '#fd8d3c', 5: '#f03b20', 6: '#bd0026'},
+    #'colorbrewer_YlOrRd':{1:'#ffffb2', 2: '#fed976', 3: '#feb24c', 4: '#fd8d3c', 5: '#f03b20', 6: '#bd0026'},
     'colorbrewer_Oranges':{1:'#feedde', 2: '#fdd0a2', 3: '#fdae6b', 4: '#fd8d3c', 5: '#e6550d', 6: '#a63603'},
 
     # Red/purple:
@@ -180,3 +183,6 @@ class GeographicalVisualizer:
         # Save map.
         plt_path = os.path.join(cwd, 'output', self.output_filename)
         plt.savefig(plt_path, bbox_inches='tight', transparent='True', pad_inches=0)
+
+        plt.clf()
+        plt.close()

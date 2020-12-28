@@ -19,6 +19,15 @@ with open(r'C:\Users\hoged\OneDrive\Skrivebord\Speciale\Data\PostgreSQL\11. Mast
 # Get all data of relevance for the descriptive statistical analysis.
 df_Master = db.Read(masterQuery)
 
+# Shapiro-Wilk test of normality (https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.shapiro.html).
+def shapiro_wilk(univariate_data, note):
+    stat, p = scipy.stats.shapiro(univariate_data)
+    #print('stat=%.3f, p=%.3f' % (stat, p))
+    if p > 0.05:
+        print("\tShapiro-Wilk test of normality ({0}): The variable is probably Gaussian (W = {1}, p={2})".format(note, str(round(stat,3)), str(round(p,3)))) # W = the test statistic
+    else:
+        print("\tShapiro-Wilk test of normality ({0}): The variable is probably NOT Gaussian (W = {1}, p={2})".format(note, str(round(stat,3)), str(round(p,3))))
+
 ################################################################################################################################ CSV backup of master data
 
 #df_Master.to_csv(r'C:\Users\hoged\OneDrive\Skrivebord\Speciale\Data\Master data.csv', index=False, encoding='CP1252')
@@ -42,16 +51,16 @@ def approvalRatios():
 
 df_Key = df_Master[['currentnumber', 'approvalnumber', 'propensity']].dropna()
 
-def univariate(column, x_name, countValue, continuous=True, color='blue', plot_note_fontsize=8, plot_title_fontsize=12):
+def univariate(df, column, x_name, countValue, continuous=True, color='blue', plot_note_fontsize=8, plot_title_fontsize=12):
     print("-------------------------------------------------------")
 
     print("Univariate measures for variable '{0}'".format(x_name))
 
     # Univariate data.
-    x = df_Key[column].rename(x_name)
+    x = df[column].rename(x_name)
 
     # Number of combined approvals with an x value of 'countValue'.
-    num_countValue = len(df_Key.loc[df_Key[column] == 0.0].index)
+    num_countValue = len(df.loc[df[column] == 0.0].index)
     print("\tNumber of combined approvals with an x value of '{0}': {1}.".format(str(countValue), str(num_countValue)))
 
     # If the variable is continuous (ie. quantitative), visualize it with a histogram.
@@ -92,7 +101,7 @@ def univariate(column, x_name, countValue, continuous=True, color='blue', plot_n
         # Box-Cox transformation of skewed/non-Gaussian variables (https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.boxcox.html).
         #plt.figure(3)
         plt.sca(axs[2])
-        df_xt = df_Key.loc[df_Key[column] > 0.0] # Values must be >0.
+        df_xt = df.loc[df[column] > 0.0] # Values must be >0.
         xt = df_xt[column].rename("Box-Cox transformation of '{0}'".format(x_name))
         xt, xt_lambda = scipy.stats.boxcox(xt)
         sns.histplot(xt, color=color)
@@ -190,15 +199,6 @@ def univariate(column, x_name, countValue, continuous=True, color='blue', plot_n
     if len(x_outliers_left) > 0:
         print("\tLeft outliers:\n\t\tCount: {0}\n\t\tMinimum value: {1}\n\t\tMaximum value: {2}".format(str(len(x_outliers_left)), str(min(x_outliers_left)), str(max(x_outliers_left))))
     
-    # Shapiro-Wilk test of normality (https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.shapiro.html).
-    def shapiro_wilk(univariate_data, note):
-        stat, p = scipy.stats.shapiro(univariate_data)
-        #print('stat=%.3f, p=%.3f' % (stat, p))
-        if p > 0.05:
-            print("\tShapiro-Wilk test of normality ({0}): The variable is probably Gaussian (W = {1}, p={2})".format(note, str(round(stat,3)), str(round(p,3)))) # W = the test statistic
-        else:
-            print("\tShapiro-Wilk test of normality ({0}): The variable is probably NOT Gaussian (W = {1}, p={2})".format(note, str(round(stat,3)), str(round(p,3))))
-
     shapiro_wilk(x, 'including outliers')
     shapiro_wilk(x_outliers_removed, 'outliers excluded')
 
@@ -217,9 +217,9 @@ def univariate(column, x_name, countValue, continuous=True, color='blue', plot_n
     plt.clf()
     plt.close()
 
-#univariate('approvalnumber', 'Number of vocational students a production unit is approved for', 0.0, color='cornflowerblue')
-#univariate('currentnumber', 'Current number of employed vocational students', 0.0, color='orange')
-#univariate('propensity', 'Propensity to employ vocational students', 0.0, color='green')
+#univariate(df_Key, 'approvalnumber', 'Number of vocational students a production unit is approved for', 0.0, color='cornflowerblue')
+#univariate(df_Key, 'currentnumber', 'Current number of employed vocational students', 0.0, color='orange')
+#univariate(df_Key, 'propensity', 'Propensity to employ vocational students', 0.0, color='green')
 
 ################################################################################################################################ Analyse dichotomous propensity observations
 
@@ -730,44 +730,281 @@ def heatmapCommuting():
 
 ################################################################################################################################ Scatterplot: Commuting and student numbers per municipality
 
-df_Commuting = db.Read("SELECT municipalitycode, avgcommutekm, population FROM municipalitydemographics")
-df_MunicipalNumbers = df_Master[['municipalitycode', 'currentnumber', 'approvalnumber']]
+def scatterplotCommuting():
+    df_Commuting = db.Read("SELECT municipalitycode, avgcommutekm, population FROM municipalitydemographics")
+    df_MunicipalNumbers = df_Master[['municipalitycode', 'currentnumber', 'approvalnumber']]
 
-# Sum values by municipalities and merge with commuting data.
-df_MunicipalNumbers = df_MunicipalNumbers.groupby(['municipalitycode'], as_index=False)[['currentnumber', 'approvalnumber']].sum()
-df_MunicipalNumbers = df_Commuting.merge(df_MunicipalNumbers, how='left', left_on='municipalitycode', right_on='municipalitycode')
+    # Sum values by municipalities and merge with commuting data.
+    df_MunicipalNumbers = df_MunicipalNumbers.groupby(['municipalitycode'], as_index=False)[['currentnumber', 'approvalnumber']].sum()
+    df_MunicipalNumbers = df_Commuting.merge(df_MunicipalNumbers, how='left', left_on='municipalitycode', right_on='municipalitycode')
 
-# Municipal propensity: The ratio of municipalities accumulated approval numbers and accumulated numbers of currently employed vocational students.
-df_MunicipalNumbers['propensity'] = df_MunicipalNumbers['currentnumber'] / df_MunicipalNumbers['approvalnumber']
+    # Municipal propensity: The ratio of municipalities accumulated approval numbers and accumulated numbers of currently employed vocational students.
+    df_MunicipalNumbers['propensity'] = df_MunicipalNumbers['currentnumber'] / df_MunicipalNumbers['approvalnumber']
 
-# Adjust current number for municipal population size.
-df_MunicipalNumbers['Current number (adjusted)'] = (df_MunicipalNumbers['currentnumber'] / df_MunicipalNumbers['population'])*10000
+    # Adjust current number for municipal population size.
+    df_MunicipalNumbers['Current number (adjusted)'] = (df_MunicipalNumbers['currentnumber'] / df_MunicipalNumbers['population'])*10000
 
-# Remove observations with zero values.
-df_MunicipalNumbers = df_MunicipalNumbers[df_MunicipalNumbers['Current number (adjusted)'] > 0.0]
-df_MunicipalNumbers = df_MunicipalNumbers.fillna(0)
+    # Remove observations with zero values.
+    df_MunicipalNumbers = df_MunicipalNumbers[df_MunicipalNumbers['Current number (adjusted)'] > 0.0]
+    df_MunicipalNumbers = df_MunicipalNumbers.fillna(0)
 
-print(df_MunicipalNumbers.sort_values('Current number (adjusted)', ascending=True).head(100))
+    print(df_MunicipalNumbers.sort_values('Current number (adjusted)', ascending=True).head(100))
 
-# Regression.
-x = df_MunicipalNumbers['avgcommutekm']
-y = df_MunicipalNumbers['Current number (adjusted)']
-slope, intercept, rvalue, pvalue, stderr = scipy.stats.linregress(x, y)
-regressionLabel = f'Regression line: y={intercept:.2f}+{slope:.2f}x, r={rvalue:.2f}, p={pvalue:.2f}'
+    # Regression.
+    x = df_MunicipalNumbers['avgcommutekm']
+    y = df_MunicipalNumbers['Current number (adjusted)']
+    slope, intercept, rvalue, pvalue, stderr = scipy.stats.linregress(x, y)
+    regressionLabel = f'Regression line:\ny={intercept:.2f}+{slope:.2f}x\nr={rvalue:.2f}\np={pvalue:.2f}'
 
-# Scatter plot with regression line.
-fig, ax = plt.subplots()
+    # Scatter plot with regression line.
+    fig, ax = plt.subplots()
 
-ax.plot(x, y, linewidth=0, marker='s', label='Data points')
-ax.plot(x, intercept + slope * x, label=regressionLabel)
+    ax.plot(x, y, linewidth=0, marker='s')
+    ax.plot(x, intercept + slope * x, label=regressionLabel)
 
-ax.set_xlabel('x')
-ax.set_ylabel('y')
-ax.legend(facecolor='white')
+    ax.set_xlabel('Average commute in kilometers', fontsize=16)
+    ax.set_ylabel('Number of currently employed vocational\nstudents per 10,000 municipal inhabitants', fontsize=16)
+    ax.legend(facecolor='white', fontsize=14)
 
-plt.show()
-plt.clf()
-plt.close()
+    plt.show()
+    plt.clf()
+    plt.close()
+
+#scatterplotCommuting()
+
+################################################################################################################################ Scatterplot and heat map for average distances to nearest school faility per municipality
+
+def proximity():
+    df_MunicipalNumbers = df_Master[['municipalitycode', 'currentnumber', 'approvalnumber', 'nearestfacilitykm']]
+
+    # Get number of observations per municipality.
+    df_MunicipalObservations = df_MunicipalNumbers.groupby(['municipalitycode'], as_index=False).size().reset_index(name='n')
+
+    # Get approval and employment numbers per municipality.
+    df_MunicipalNumbers = df_MunicipalNumbers.groupby(['municipalitycode'], as_index=False).sum()
+
+    # Merge with number of obersvations and remaining municipalities in the database.
+    df_MunicipalNumbers = df_MunicipalObservations.merge(df_MunicipalNumbers, how='left', left_on='municipalitycode', right_on='municipalitycode')
+    df_MunicipalNumbers = db.Read("SELECT municipalitycode, name FROM municipality").merge(df_MunicipalNumbers, how='left', left_on='municipalitycode', right_on='municipalitycode')
+
+    # Get average distance to nearest school facility per municipality.
+    avg_distance = "Average distance to nearest school facility (km)"
+    df_MunicipalNumbers[avg_distance] = df_MunicipalNumbers['nearestfacilitykm'] / df_MunicipalNumbers['n']
+
+    # Clean up dataframe.
+    df_MunicipalNumbers = df_MunicipalNumbers.fillna(0)
+    df_MunicipalNumbers = df_MunicipalNumbers.drop('n', 1)
+
+    print(df_MunicipalNumbers.sort_values(avg_distance, ascending=True).head(100))
+
+    # Heat map: Color scale.
+    colorScale = hm.dict_ColorScales['distance']
+
+    # Heat map: Determine 'heat' of municipality.
+    dict_HeatMap = {}
+    for i, row in df_MunicipalNumbers.iterrows():
+        for key, color in colorScale.items():
+            if row[avg_distance] > key:
+                dict_HeatMap['0'+str(int(row['municipalitycode']))] = color
+
+    # Create heat map.
+    hm.GeographicalVisualizer(dict_SubnationalColor=dict_HeatMap, 
+        path_Shapefile='KOMMUNE.shp', 
+        sf_SubnationalColumn='KOMKODE', 
+        dict_ColorScale=colorScale).plot_map('Average distance (km) to nearest school facility per municipality.png', 
+            scaleTextBefore='> ', 
+            scaleTextAfter=' km', 
+            scaleTextAdjustLeft=25000
+        )
+
+    # Merge with municipal population sizes.
+    df_MunicipalPopulation = db.Read("SELECT municipalitycode, population FROM municipalitydemographics")
+    df_MunicipalNumbers = df_MunicipalNumbers.merge(df_MunicipalPopulation, how='left', left_on='municipalitycode', right_on='municipalitycode')
+
+    # Remove observations with no currently employed students, missing population data and missing distance data.
+    df_MunicipalNumbers = df_MunicipalNumbers.loc[(df_MunicipalNumbers[avg_distance] > 0.0) & (df_MunicipalNumbers['currentnumber'] > 0.0) & (df_MunicipalNumbers['population'] > 0.0)]
+
+    ### Regression and scatterplot including outliers.
+
+    # Regression.
+    x = df_MunicipalNumbers['population']
+    y = df_MunicipalNumbers[avg_distance]
+    slope, intercept, rvalue, pvalue, stderr = scipy.stats.linregress(x, y)
+    regressionLabel = f'Regression line:\ny={intercept:.2f}+{slope:.2f}x\nr={rvalue:.2f}\np={pvalue:.2f}'
+
+    # Testing for normality (outliers INCLUDED).
+    shapiro_wilk(x, 'Population sizes including outliers')
+    shapiro_wilk(y, 'Distances including outliers')
+
+    # Scatter plot with regression line.
+    fig, ax = plt.subplots()
+
+    ax.plot(x, y, linewidth=0, marker='s')
+    ax.plot(x, intercept + slope * x, label=regressionLabel)
+
+    ax.set_xlabel('Municipal population size', fontsize=16)
+    ax.set_ylabel('Average distance to nearest school facility (km)', fontsize=16)
+    ax.legend(facecolor='white', fontsize=14)
+
+    plt.show()
+    plt.clf()
+    plt.close()
+
+    ### Regression and scatterplot excluding outliers.
+
+    # Excluding outliers.
+    df_MunicipalNumbers = df_MunicipalNumbers.loc[(df_MunicipalNumbers[avg_distance] < 100) & (df_MunicipalNumbers['population'] < 200000)]
+
+    # Regression.
+    x = df_MunicipalNumbers['population']
+    y = df_MunicipalNumbers[avg_distance]
+    slope, intercept, rvalue, pvalue, stderr = scipy.stats.linregress(x, y)
+    regressionLabel = f'Regression line:\ny={intercept:.2f}+{slope:.2f}x\nr={rvalue:.2f}\np={pvalue:.2f}'
+
+    # Testing for normality (outliers EXCLUDED).
+    shapiro_wilk(x, 'Population sizes excluding outliers')
+    shapiro_wilk(y, 'Distances excluding outliers')
+
+    # Scatter plot with regression line.
+    fig, ax = plt.subplots()
+
+    ax.plot(x, y, linewidth=0, marker='s')
+    ax.plot(x, intercept + slope * x, label=regressionLabel)
+
+    ax.set_xlabel('Municipal population size', fontsize=16)
+    ax.set_ylabel('Average distance to nearest school facility (km)', fontsize=16)
+    ax.legend(facecolor='white', fontsize=14)
+
+    plt.show()
+    plt.clf()
+    plt.close()
+
+    ### Visually inspect distributions for the variables excluding outliers.
+    sns.distplot(x, kde=True)
+    plt.xlabel('Municipal population size', fontsize=16)
+
+    plt.show()
+    plt.clf()
+    plt.close()
+
+#proximity()
+
+################################################################################################################################ Employment rate
+
+def employmentRate():
+
+    df_MunicipalNumbers = df_Master[['municipalitycode', 'currentnumber', 'approvalnumber']]
+
+    # Get approval and employment numbers per municipality.
+    df_MunicipalNumbers = df_MunicipalNumbers.groupby(['municipalitycode'], as_index=False).sum()
+
+    # Merge with municipal employment rates.
+    df_MunicipalEmployment = db.Read("SELECT municipalitycode, employmentrate, population FROM municipalitydemographics WHERE yearofmeasurement = 2018")
+    df_MunicipalNumbers = df_MunicipalEmployment.merge(df_MunicipalNumbers, how='left', left_on='municipalitycode', right_on='municipalitycode')
+
+    # Values per x municipal inhabitants.
+    df_MunicipalNumbers['adjusted_currentnumber'] = (df_MunicipalNumbers['currentnumber'] / df_MunicipalNumbers['population'])*10000
+
+    # Heat map: Color scale.
+    colorScale = hm.dict_ColorScales['employmentrate']
+
+    # Heat map: Determine 'heat' of municipality.
+    dict_HeatMap = {}
+    for i, row in df_MunicipalNumbers.iterrows():
+        for key, color in colorScale.items():
+            if row['employmentrate'] > key:
+                dict_HeatMap['0'+str(int(row['municipalitycode']))] = color
+
+    # Create heat map.
+    hm.GeographicalVisualizer(dict_SubnationalColor=dict_HeatMap, 
+        path_Shapefile='KOMMUNE.shp', 
+        sf_SubnationalColumn='KOMKODE', 
+        dict_ColorScale=colorScale).plot_map('Employment rate per municipality.png', 
+            scaleTextBefore='> ', 
+            scaleTextAfter=' ', 
+            scaleTextAdjustLeft=25000
+        )
+
+    # Clean up dataframe.
+    df_MunicipalNumbers = df_MunicipalNumbers.fillna(0)
+    df_MunicipalNumbers = df_MunicipalNumbers.loc[(df_MunicipalNumbers['currentnumber'] > 0.0)]
+
+    print(df_MunicipalNumbers.sort_values('employmentrate', ascending=True).head(100))
+
+    # Regression.
+    x = df_MunicipalNumbers['employmentrate']
+    y = df_MunicipalNumbers['adjusted_currentnumber']
+    slope, intercept, rvalue, pvalue, stderr = scipy.stats.linregress(x, y)
+    regressionLabel = f'Regression line:\ny={intercept:.2f}+{slope:.2f}x\nr={rvalue:.2f}\np={pvalue:.2f}'
+
+    # Testing for normality (outliers EXCLUDED).
+    shapiro_wilk(x, 'Employment rate')
+    shapiro_wilk(y, 'Adjusted current number')
+
+    # Scatter plot with regression line.
+    fig, ax = plt.subplots()
+
+    ax.plot(x, y, linewidth=0, marker='s')
+    ax.plot(x, intercept + slope * x, label=regressionLabel)
+
+    ax.set_xlabel('Municipal employment rate', fontsize=16)
+    ax.set_ylabel('Number of currently employed vocational students per 10,000 municipal inhabitants', fontsize=16)
+    ax.legend(facecolor='white', fontsize=14)
+
+    plt.show()
+    plt.clf()
+    plt.close()
+
+################################################################################################################################ Disposable income
+
+def disposableIncome():
+    df_MunicipalNumbers = df_Master[['municipalitycode', 'currentnumber', 'approvalnumber']]
+
+    # Get approval and employment numbers per municipality.
+    df_MunicipalNumbers = df_MunicipalNumbers.groupby(['municipalitycode'], as_index=False).sum()
+
+    # Merge with municipal employment rates.
+    df_MunicipalIncome = db.Read("SELECT municipalitycode, yearlydisposableincome, population FROM municipalitydemographics WHERE yearofmeasurement = 2018")
+    df_MunicipalNumbers = df_MunicipalIncome.merge(df_MunicipalNumbers, how='left', left_on='municipalitycode', right_on='municipalitycode')
+
+    # Values per x municipal inhabitants.
+    df_MunicipalNumbers['adjusted_currentnumber'] = (df_MunicipalNumbers['currentnumber'] / df_MunicipalNumbers['population'])*10000
+
+    print(df_MunicipalNumbers.sort_values('yearlydisposableincome', ascending=True).head(100))
+
+    # Heat map: Color scale.
+    colorScale = hm.dict_ColorScales['yearlydisposableincome']
+
+    # Heat map: Determine 'heat' of municipality.
+    dict_HeatMap = {}
+    for i, row in df_MunicipalNumbers.iterrows():
+        for key, color in colorScale.items():
+            if row['yearlydisposableincome'] > key:
+                dict_HeatMap['0'+str(int(row['municipalitycode']))] = color
+
+    # Create heat map.
+    hm.GeographicalVisualizer(dict_SubnationalColor=dict_HeatMap, 
+        path_Shapefile='KOMMUNE.shp', 
+        sf_SubnationalColumn='KOMKODE', 
+        dict_ColorScale=colorScale).plot_map('Average yearly disposable income per municipality.png', 
+            scaleTextBefore='> DKK', 
+            scaleTextAfter='', 
+            scaleTextAdjustLeft=50000
+        )
+
+#disposableIncome()
+
+################################################################################################################################ Financial figures and company attributes
+
+df_Finance = df_Master[['currentnumber', 'approvalnumber', 'netturnover']]
+
+# Remove observations with missing data.
+df_Finance = df_Finance.fillna(0)
+df_Finance = df_Finance.loc[(df_Finance['netturnover'] > 0.0)]
+
+print("n = " + str(len(df_Finance.index)))
+
+univariate(df_Finance, 'netturnover', 'Net turnover', 0.0, color='purple')
 
 ################################################################################################################################ Disconnect database
 
