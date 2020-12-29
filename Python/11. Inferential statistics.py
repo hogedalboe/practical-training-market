@@ -115,4 +115,120 @@ def businessSector():
     stat, p = kruskal(*[group["propensity"].values for name, group in df.groupby("sectorcode")])
     interpret_kruskal(stat, p)
 
-businessSector()
+#businessSector()
+
+############################################################################################################################################### Section 5.4.3 (The influences of financial figures and school proximity).
+
+def finance():
+    df = df_Master[['currentnumber', 'propensity', 'netresult', 'roi', 'nearestfacilitykm']]
+    df = df.dropna()
+
+    # Defining the independent variables .
+    x = df[['netresult', 'roi', 'nearestfacilitykm']] 
+
+    # Creating dummy (dependent) variables (that do not require further omissions).
+    df.loc[(df['currentnumber'] > 0), 'employs_any'] = 1
+    df.loc[(df['currentnumber'] == 0), 'employs_any'] = 0
+
+    df.loc[(df['propensity'] >= 0.337), 'high_propensity'] = 1
+    df.loc[(df['propensity'] < 0.337), 'high_propensity'] = 0
+
+    print(df.head(10))
+
+    # Running logistic regression model with dependent variables individually.
+    logreg(df[['employs_any']] , x)
+    logreg(df[['high_propensity']] , x)
+
+    # Remove observation with zero employed vocational students.
+    df = df.loc[df['currentnumber'] > 0]
+
+    # Redefining the independent variables .
+    x = df[['netresult', 'roi', 'nearestfacilitykm']] 
+
+    # Creating dummy (dependent) variable..
+    df.loc[(df['currentnumber'] > 1), 'employs_several'] = 1
+    df.loc[(df['currentnumber'] == 1), 'employs_several'] = 0
+
+    print(df.head(10))
+
+    logreg(df[['employs_several']] , x)
+
+#finance()
+
+############################################################################################################################################### Section 5.4.4 (Subnational variance).
+
+def subnational():
+    df = df_Master[['currentnumber', 'propensity', 'regioncode', 'municipalitycode']]
+
+    # Analyse variance across regions.
+    print('Region: Current number')
+    stat, p = kruskal(*[group["currentnumber"].values for name, group in df.groupby("regioncode")])
+    interpret_kruskal(stat, p)
+
+    print('Region: Propensity')
+    stat, p = kruskal(*[group["propensity"].values for name, group in df.groupby("regioncode")])
+    interpret_kruskal(stat, p)
+
+    # Analyse variance across municipalities.
+    print('Municipality: Current number')
+    stat, p = kruskal(*[group["currentnumber"].values for name, group in df.groupby("municipalitycode")])
+    interpret_kruskal(stat, p)
+
+    print('Municipality: Propensity')
+    stat, p = kruskal(*[group["propensity"].values for name, group in df.groupby("municipalitycode")])
+    interpret_kruskal(stat, p)
+
+    # Remove the capital region and test again.
+    df = df.loc[(df['regioncode'] != 1084)]
+
+    print('Region (excluding capital): Current number')
+    stat, p = kruskal(*[group["currentnumber"].values for name, group in df.groupby("regioncode")])
+    interpret_kruskal(stat, p)
+
+    print('Region (excluding capital): Propensity')
+    stat, p = kruskal(*[group["propensity"].values for name, group in df.groupby("regioncode")])
+    interpret_kruskal(stat, p)
+
+#subnational()
+
+############################################################################################################################################### Section 5.4.5 (Demographical correlations).
+
+def demographics():
+    df = df_Master[['currentnumber', 'propensity', 'yearlydisposableincome', 'employmentrate', 'employmentavailabilityrate', 'avgcommutekm']]
+    df = df.dropna()
+
+    # Defining the independent variables.
+    x = df[['yearlydisposableincome', 'employmentrate', 'employmentavailabilityrate', 'avgcommutekm']] 
+
+    # Creating dummy (dependent) variables (that do not require further omissions).
+    df.loc[(df['currentnumber'] > 0), 'employs_any'] = 1
+    df.loc[(df['currentnumber'] == 0), 'employs_any'] = 0
+
+    df.loc[(df['propensity'] >= 0.337), 'high_propensity'] = 1
+    df.loc[(df['propensity'] < 0.337), 'high_propensity'] = 0
+
+    # Running logistic regression model with dependent variables individually.
+    logreg(df[['employs_any']] , x)
+    logreg(df[['high_propensity']] , x)
+
+    # Remove observation with zero employed vocational students.
+    df = df.loc[df['currentnumber'] > 0]
+
+    # Redefining the independent variables .
+    x = df[['yearlydisposableincome', 'employmentrate', 'employmentavailabilityrate', 'avgcommutekm']] 
+
+    # Creating dummy (dependent) variable..
+    df.loc[(df['currentnumber'] > 1), 'employs_several'] = 1
+    df.loc[(df['currentnumber'] == 1), 'employs_several'] = 0
+
+    logreg(df[['employs_several']] , x)
+
+#demographics()
+
+############################################################################################################################################### Section 5.4.6 (Propensity variance across educations).
+
+df = df_Master[['propensity', 'edunum']]
+
+stat, p = kruskal(*[group["propensity"].values for name, group in df.groupby("edunum")])
+interpret_kruskal(stat, p)
+
