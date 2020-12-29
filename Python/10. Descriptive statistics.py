@@ -955,6 +955,8 @@ def employmentRate():
     plt.clf()
     plt.close()
 
+#employmentRate()
+
 ################################################################################################################################ Disposable income
 
 def disposableIncome():
@@ -996,15 +998,63 @@ def disposableIncome():
 
 ################################################################################################################################ Financial figures and company attributes
 
-df_Finance = df_Master[['currentnumber', 'approvalnumber', 'netturnover']]
+def financials():
+    df_Finance = df_Master[['currentnumber', 'approvalnumber', 'netturnover', 'netresult', 'liquidityratio', 'roi', 'solvencyratio', 'established', 'employees']]
 
-# Remove observations with missing data.
-df_Finance = df_Finance.fillna(0)
-df_Finance = df_Finance.loc[(df_Finance['netturnover'] > 0.0)]
+    # Remove observations with missing data.
+    df_Finance = df_Finance.fillna(0)
 
-print("n = " + str(len(df_Finance.index)))
+    print("n = " + str(len(df_Finance.index)))
 
-univariate(df_Finance, 'netturnover', 'Net turnover', 0.0, color='purple')
+    # Net turnover.
+    df = df_Finance.loc[(df_Finance['netturnover'] > 0.0)]
+    univariate(df, 'netturnover', 'Net turnover', 0.0, color='purple')
+
+    # Net result.
+    df = df_Finance.loc[(df_Finance['netresult'] != 0)]
+    univariate(df, 'netresult', 'Net result', 0.0, color='black')
+
+    # Liquidity ratio.
+    df = df_Finance.loc[(df_Finance['liquidityratio'] != 0)]
+    univariate(df, 'liquidityratio', 'Liquidity ratio', 0.0, color='black')
+
+    # Return-on-investment, ROI.
+    df = df_Finance.loc[(df_Finance['roi'] != 0)]
+    univariate(df, 'roi', 'Return-on-investment, ROI', 0.0, color='black')
+
+    # Solvency ratio.
+    df = df_Finance.loc[(df_Finance['solvencyratio'] != 0)]
+    univariate(df, 'solvencyratio', 'Solvency ratio', 0.0, color='black')
+
+    # Year of establishment.
+    df = df_Finance.loc[(df_Finance['established'] != 0)]
+    univariate(df, 'established', 'Year of establishment', 0.0, color='black')
+
+    # Histogram for year of establishment.
+    sns.histplot(df['established'], color='black')
+    x_n = len(df['established'].index)
+    plt.title("n = {}".format(str(x_n)), loc='right')
+    plt.xlabel("{0}".format('Year of establishment'))
+    plt.tight_layout()
+    plt.show()
+    plt.clf()
+    plt.close()
+
+    # Total number of employees.
+    df = df_Finance.loc[(df_Finance['employees'] != 0)]
+    univariate(df, 'employees', 'Total number of employees', 0.0, color='black')
+
+    # Histogram for total number of employees.
+    sns.histplot(df['employees'], color='black')
+    x_n = len(df['employees'].index)
+    plt.title("n = {}".format(str(x_n)), loc='right')
+    plt.xlabel("{0}".format('Total number of employees'))
+    plt.tight_layout()
+    plt.show()
+    plt.clf()
+    plt.close()
+
+#financials()
 
 ################################################################################################################################ Disconnect database
 
